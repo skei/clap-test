@@ -11,23 +11,15 @@
 #include <vector>
 
 //----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
+
+//class MidiSequence;
+
+//----------
 
 struct MidiEvent {
   uint32_t  time    = 0;
   uint8_t   data[4] = {0};
 };
-
-//----------------------------------------------------------------------
-//
-//
-//
-//----------------------------------------------------------------------
-
-class MidiSequence;
 
 //----------
 
@@ -35,9 +27,8 @@ struct MidiParser {
   tinysmf_parser_ctx  ctx   = {};
   int                 time  = 0;
   double              bpm   = 0.0;
-  MidiSequence*       seq   = NULL;
+  class MidiSequence* seq   = NULL;
 };
-
 
 //----------------------------------------------------------------------
 //
@@ -55,8 +46,14 @@ private:
   std::vector<MidiEvent*>  MEvents;
 
 //------------------------------
-private:
+public:
 //------------------------------
+
+  uint32_t    getNumEvents()  { return MEvents.size(); }
+  MidiEvent*  getEvent(int i) { return MEvents[i]; }
+  MidiEvent** getEvents()     { return &MEvents[0]; }
+
+  //----------
 
   void appendEvent(MidiEvent* AEvent) {
     MEvents.push_back(AEvent);
@@ -74,8 +71,7 @@ private:
 
   static
   void on_midi_event(struct tinysmf_parser_ctx *ctx, const struct tinysmf_midi_event *ev) {
-    MidiParser *parser = (MidiParser *)ctx;
-
+    MidiParser* parser = (MidiParser *)ctx;
     MidiEvent* event = new MidiEvent();
     event->data[0] = ev->bytes[0];
     event->data[1] = ev->bytes[1];
@@ -83,17 +79,15 @@ private:
     event->data[3] = ev->bytes[3];
     parser->time += ev->delta;
     event->time = (60.0 / parser->bpm) * (parser->time / (double)parser->ctx.file_info.division.ppqn);
-
-  //  p->mid.appendEvent(e);
-
-  //VECTOR_PUSH_BACK(&p->host->sequence, e);
-
+    //p->mid.appendEvent(e);
+    //VECTOR_PUSH_BACK(&p->host->sequence, e);
+    parser->seq->appendEvent(event);
   }
 
   //----------
 
   /*
-    paste everything into one track?
+    paste everything into one 'track'?
   */
 
   static
@@ -119,7 +113,6 @@ private:
 
   //----------
 
-
   static
   int midi_note_cmp(const void *a, const void *b) {
     const MidiEvent* na = (const MidiEvent*)a;
@@ -143,24 +136,24 @@ public:
     parser.ctx.track_start_cb = on_track_start;
     parser.ctx.midi_event_cb  = on_midi_event;
     parser.ctx.meta_event_cb  = on_meta_event;
-
     FILE *fp;
     if (!(fp = fopen(path, "rb"))) {
       perror("couldn't open MIDI file");
       return -1;
     }
-
     if (tinysmf_parse_stream((tinysmf_parser_ctx*)&parser, fp)) {
       fprintf(stderr, "error parsing \"%s\"\n", path);
       fclose(fp);
       return -1;
     }
 
-    qsort( &MEvents, MEvents.size(), sizeof(MidiEvent*), midi_note_cmp);
+    // MEvents[0]
+    // &MEvents[0];
+    // MEvents.data()
+    qsort( MEvents.data(), MEvents.size(), sizeof(MidiEvent*), midi_note_cmp);
 
     fclose(fp);
     return 0;
-
   }
 
 };

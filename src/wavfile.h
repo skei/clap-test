@@ -6,58 +6,11 @@
 
 #include <sndfile.h>
 
-struct wav_t {
-  int     num_samples;
-  float*  buffer_left;
-  float*  buffer_right;
-};
-
 //----------------------------------------------------------------------
 //
 //----------------------------------------------------------------------
 
-//bool init_wav(wav_t* wav) {
-//  wav->num_samples = 0;
-//  wav->buffer_left = NULL;
-//  wav->buffer_right = NULL;
-//  return true;
-//}
-//
-////----------
-//
-//void delete_wav(wav_t* wav) {
-//  wav->num_samples = 0;
-//  if (wav->buffer_left) {
-//    free(wav->buffer_left);
-//    wav->buffer_left = NULL;
-//  }
-//  if (wav->buffer_right) {
-//    free(wav->buffer_right);
-//    wav->buffer_right = NULL;
-//  }
-//}
-//
-////----------
-//
-//int load_wav(wav_t* wav, const char* filename) {
-//  return 0;
-//}
-//
-////----------
-//
-//int save_wav(wav_t* wav, const char* filename) {
-//  return 0;
-//}
-
-//------------------------------
-//
-//------------------------------
-
-//----------------------------------------------------------------------
-//
-//----------------------------------------------------------------------
-
-SNDFILE* open_infile(SF_INFO* info, const char *path) {
+SNDFILE* wav_open_input(SF_INFO* info, const char *path) {
   SNDFILE *snd;
   snd = sf_open(path, SFM_READ, info);
   if (!snd) goto err_sf_open;
@@ -69,14 +22,14 @@ err_sf_open:
 
 //----------
 
-// close..
-//  if (test_host.infile) sf_close(test_host.infile);
-
-
+void wav_close_input(SNDFILE* wav) {
+  if (wav) sf_close(wav);
+  wav = NULL;
+}
 
 //----------
 
-SNDFILE* open_outfile(const char *path, int sample_rate, int channels) {
+SNDFILE* wav_open_output(const char *path, int sample_rate, int channels) {
   SNDFILE *snd;
   SF_INFO info = {
     .frames     = 0,
@@ -97,7 +50,14 @@ err_sf_open:
 
 //----------
 
-sf_count_t read_from_infile(SNDFILE *snd, unsigned channels, unsigned block_size, float **buf_list) {
+void wav_close_output(SNDFILE* wav) {
+  if (wav) sf_close(wav);
+  wav = NULL;
+}
+
+//----------
+
+sf_count_t wav_read_input(SNDFILE *snd, unsigned channels, unsigned block_size, float **buf_list) {
   float read_buf[channels];
   sf_count_t f, ret;
   unsigned c;
@@ -114,7 +74,7 @@ sf_count_t read_from_infile(SNDFILE *snd, unsigned channels, unsigned block_size
 
 //----------
 
-void write_to_outfile(SNDFILE *snd, unsigned channels, unsigned block_size, float **buf_list) {
+void wav_write_output(SNDFILE *snd, unsigned channels, unsigned block_size, float **buf_list) {
   float write_buf[channels];
   sf_count_t f;
   unsigned c;

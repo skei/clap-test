@@ -76,9 +76,9 @@ class CLAP_Test {
 private:
 //------------------------------
 
-  arguments_t   MArguments;
-  Host     MHost;
-  Entry    MEntry;
+  arguments_t MArguments;
+  Host        MHost;
+  Entry       MEntry;
 
 //------------------------------
 public:
