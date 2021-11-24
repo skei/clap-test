@@ -52,7 +52,7 @@ public:
       printf("! Error: Couldn't open %s\n", APath);
       return false;
     }
-    MClapEntry = (struct clap_plugin_entry*)SYS_getLibrarySymbol(MLibHandle,"clap_plugin_entry");
+    MClapEntry = (struct clap_plugin_entry*)get_library_symbol(MLibHandle,"clap_plugin_entry");
     if (!MClapEntry) {
       printf("! Error: Couldn't find 'clap_plugin_entry'\n");
       close_library(MLibHandle);

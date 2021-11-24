@@ -25,7 +25,7 @@ void close_library(void* lib) {
 
 //----------
 
-void* SYS_getLibrarySymbol(void* lib, const char* sym) {
+void* get_library_symbol(void* lib, const char* sym) {
   return dlsym(lib,sym);
 }
 
