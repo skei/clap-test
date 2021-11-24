@@ -13,7 +13,6 @@ private:
 //------------------------------
 
   const clap_plugin*                    MClapPlugin;
-
   const clap_plugin_audio_ports_config* MClapAudioPortsConfig;
   const clap_plugin_audio_ports*        MClapAudioPorts;
   const clap_plugin_event_filter*       MClapEventFilter;

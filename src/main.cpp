@@ -291,7 +291,7 @@ public:
 //----------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  //PRINT("helo world\n");
+  //PRINT("hello world\n");
   CLAP_Test test;
   return test.main(argc,argv);
 }
