@@ -8,6 +8,7 @@
 #include "extern/tinysmf.c"
 
 #include <math.h>
+#include "array.h"
 
 //----------------------------------------------------------------------
 
@@ -23,7 +24,6 @@ struct midi_track_t {
   const char*         name;
   uint32_t            num_events;
   midi_event_t**      events;
-  //midi_event_array_t  events;
 };
 
 //----------
@@ -36,7 +36,6 @@ struct midi_seq_t {
 //----------
 
 struct midi_parser_t {
-  //struct uhe_test_host *host;
   tinysmf_parser_ctx  ctx;
   int                 time;
   double              bpm;
@@ -47,7 +46,6 @@ struct midi_parser_t {
 // tinysmf
 //----------------------------------------------------------------------
 
-//static
 void on_meta_event(struct tinysmf_parser_ctx *ctx, const struct tinysmf_meta_event *ev) {
   midi_parser_t *p = (midi_parser_t *)ctx;
   switch (ev->meta_type) {
@@ -61,7 +59,6 @@ void on_meta_event(struct tinysmf_parser_ctx *ctx, const struct tinysmf_meta_eve
 
 //----------
 
-//static
 void on_midi_event(struct tinysmf_parser_ctx *ctx, const struct tinysmf_midi_event *ev) {
   midi_parser_t *p = (midi_parser_t *)ctx;
 
@@ -81,7 +78,6 @@ void on_midi_event(struct tinysmf_parser_ctx *ctx, const struct tinysmf_midi_eve
 
 //----------
 
-//static
 tinysmf_chunk_cb_ret_t on_track_start(struct tinysmf_parser_ctx *ctx, int track_idx) {
   midi_parser_t *p = (midi_parser_t *)ctx;
   p->time = 0;
@@ -90,15 +86,12 @@ tinysmf_chunk_cb_ret_t on_track_start(struct tinysmf_parser_ctx *ctx, int track_
 
 //----------
 
-//static
 int midi_note_cmp(const void *a, const void *b) {
   const midi_event_t* na;
   const midi_event_t* nb;
   na = (const midi_event_t*)a;
   nb = (const midi_event_t*)b;
   double diff = na->time - nb->time;
-  /* bit this idea from JUCE: sorts the MIDI notes so that a note-offs
-   * happen before note-ons if they have the same timestamp. */
   if (diff) return lrint(copysign(1.0, diff));
   if (na->data[0] == 0x80 && nb->data[0] == 0x90) return -1;
   if (na->data[0] == 0x90 && nb->data[0] == 0x80) return 1;
