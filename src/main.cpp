@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "list.h"
 #include "array.h"
 #include "mid.h"
 #include "wav.h"
 
-#include "process.h"
 
 #include "clap_entry.hpp"
+
+#include "process.h"
 
 //#define PRINT printf
 //#define PRINT(...) {}
