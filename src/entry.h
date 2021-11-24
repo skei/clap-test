@@ -1,5 +1,5 @@
-#ifndef clap_plugin_included
-#define clap_plugin_included
+#ifndef entry_included
+#define entry_included
 //----------------------------------------------------------------------
 
 // aka pluginfactory..
@@ -8,12 +8,12 @@
 #include "system.h"
 #include "utils.h"
 
-#include "clap_host.hpp"
-#include "clap_instance.hpp"
+#include "host.h"
+#include "instance.h"
 
 //----------------------------------------------------------------------
 
-class CLAP_Entry {
+class Entry {
 
 //------------------------------
 private:
@@ -23,18 +23,18 @@ private:
   const char*               MPluginPath;
   char                      MPathOnly[512];
   struct clap_plugin_entry* MClapEntry;
-  CLAP_Host                 MHost;
+  Host                      MHost;
 
 //------------------------------
 public:
 //------------------------------
 
-  CLAP_Entry() {
+  Entry() {
   }
 
   //----------
 
-  ~CLAP_Entry() {
+  ~Entry() {
   }
 
 //------------------------------
@@ -78,7 +78,7 @@ public:
 
   // create and initialize a plugin instance
 
-  CLAP_Instance* createInstance(const char* APath, uint32_t AIndex) {
+  Instance* createInstance(const char* APath, uint32_t AIndex) {
     printf("# creating plugin instance, index %i\n",AIndex);
     if (AIndex < MClapEntry->get_plugin_count()) {
       const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
@@ -88,7 +88,7 @@ public:
           printf("# plugin created\n");
           if (plugin->init(plugin)) {
             printf("# plugin initialized\n");
-            CLAP_Instance* instance = new CLAP_Instance(plugin);
+            Instance* instance = new Instance(plugin);
             return instance;
           }
           else {
@@ -117,7 +117,7 @@ public:
 
   // destroy instance
 
-  void destroyInstance(CLAP_Instance* AInstance) {
+  void destroyInstance(Instance* AInstance) {
     const clap_plugin* plugin = AInstance->getClapPlugin();
     plugin->destroy(plugin);
     printf("# plugin destroyed\n");

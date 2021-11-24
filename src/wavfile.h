@@ -1,5 +1,5 @@
-#ifndef wav_included
-#define wav_included
+#ifndef wavfile_included
+#define wavfile_included
 //----------------------------------------------------------------------
 
 // TODO: class-ify

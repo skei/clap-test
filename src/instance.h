@@ -6,7 +6,7 @@
 
 //----------------------------------------------------------------------
 
-class CLAP_Instance {
+class Instance {
 
 //------------------------------
 private:
@@ -32,14 +32,14 @@ private:
 public:
 //------------------------------
 
-  CLAP_Instance(const clap_plugin* AClapPlugin) {
+  Instance(const clap_plugin* AClapPlugin) {
     MClapPlugin = AClapPlugin;
     init_instance(AClapPlugin);
   }
 
   //----------
 
-  ~CLAP_Instance() {
+  ~Instance() {
   }
 
 //------------------------------

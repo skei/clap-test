@@ -7,14 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "array.h"
-#include "mid.h"
-#include "wav.h"
-
-
-#include "clap_entry.hpp"
-
+#include "entry.h"
 #include "process.h"
+#include "midifile.h"
+#include "wavfile.h"
 
 //#define PRINT printf
 //#define PRINT(...) {}
@@ -81,8 +77,8 @@ private:
 //------------------------------
 
   arguments_t   MArguments;
-  CLAP_Host     MHost;
-  CLAP_Entry    MEntry;
+  Host     MHost;
+  Entry    MEntry;
 
 //------------------------------
 public:
@@ -247,7 +243,7 @@ public:
 
           //----------
 
-          CLAP_Instance* instance = MEntry.createInstance(MArguments.plugin_path,MArguments.plugin_index);
+          Instance* instance = MEntry.createInstance(MArguments.plugin_path,MArguments.plugin_index);
           if (instance) {
             instance->printInfo();
             if (instance->activate(MArguments.sample_rate)) {

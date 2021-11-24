@@ -1,5 +1,5 @@
-#ifndef mid_included
-#define mid_included
+#ifndef midifile_included
+#define midifile_included
 //----------------------------------------------------------------------
 
 // TODO: class-ify

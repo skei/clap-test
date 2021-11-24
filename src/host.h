@@ -10,7 +10,7 @@
 //
 //----------------------------------------------------------------------
 
-class CLAP_Host {
+class Host {
 
 //------------------------------
 private:
@@ -33,12 +33,12 @@ private:
 public:
 //------------------------------
 
-  CLAP_Host() {
+  Host() {
   }
 
   //----------
 
-  ~CLAP_Host() {
+  ~Host() {
   }
 
   //----------
@@ -277,7 +277,7 @@ private: // callbacks
 
 /*
   callbacks
-  trampoline into the CLAP_Host class..
+  trampoline into the Host class..
 */
 
 //------------------------------------------------------------
@@ -285,77 +285,77 @@ private: // callbacks
   // clap_host
 
   static const void* clap_host_get_extension_callback(const struct clap_host* host, const char* extension_id) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_get_extension(extension_id);
   }
 
   static void clap_host_request_restart_callback(const struct clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_request_restart();
   }
 
   static void clap_host_request_process_callback(const struct clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_request_process();
   }
 
   static void clap_host_request_callback_callback(const struct clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_request_callback();
   }
 
   // clap.audio-ports
 
   static uint32_t clap_host_audio_ports_get_preferred_sample_size_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_audio_ports_get_preferred_sample_size();
   }
 
   static void clap_host_audio_ports_rescan_callback(const clap_host* host, uint32_t flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_audio_ports_rescan(flags);
   }
 
   // clap.event_filter
 
   static void clap_host_event_filter_changed_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_event_filter_changed();
   }
 
   // clap.fd-support
 
   static bool clap_host_fd_support_register_fd_callback(const clap_host* host, clap_fd fd, clap_fd_flags flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_fd_support_register_fd(fd,flags);
   }
 
   static bool clap_host_fd_support_modify_fd_callback(const clap_host* host, clap_fd fd, clap_fd_flags flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_fd_support_modify_fd(fd,flags);
   }
 
   static bool clap_host_fd_support_unregister_fd_callback(const clap_host* host, clap_fd fd) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_fd_support_unregister_fd(fd);
   }
 
   // clap.file-reference.draft/0
 
   static void clap_host_file_reference_changed_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_file_reference_changed();
   }
 
   static void clap_host_file_reference_set_dirty_callback(const clap_host* host, clap_id resource_id) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_file_reference_set_dirty(resource_id);
   }
 
   // clap.gui
 
   static bool clap_host_gui_resize_callback(const clap_host* host, uint32_t width, uint32_t height) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_gui_resize(width,height);
   }
 
@@ -364,7 +364,7 @@ private: // callbacks
   //TODO:
 
   static bool clap_host_gui_x11_attach_callback(const clap_plugin* plugin, const char* display_name, unsigned long window) {
-    //CLAP_Host* testhost = (CLAP_Host*)plugin->plugin_data;
+    //Host* testhost = (Host*)plugin->plugin_data;
     //return testhost->clap_host_gui_x11_attach(plugin,display_name,window);
     return false;
   }
@@ -372,90 +372,90 @@ private: // callbacks
   // clap.latency
 
   static void clap_host_latency_changed_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_latency_changed();
   }
 
   // clap.log
 
   static void clap_host_log_log_callback(const clap_host* host, clap_log_severity severity, const char *msg) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_log_log(severity,msg);
   }
 
   // clap.note-name
 
   static void clap_host_note_name_changed_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_note_name_changed();
   }
 
   // clap.params
 
   static void clap_host_params_rescan_callback(const clap_host* host, clap_param_rescan_flags flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_params_rescan(flags);
   }
 
   static void clap_host_params_clear_callback(const clap_host* host, clap_id param_id, clap_param_clear_flags flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_params_clear(param_id,flags);
   }
 
   static void clap_host_params_request_flush_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_params_request_flush();
   }
 
   // clap.quick-controls.draft/0
 
   static void clap_host_quick_controls_changed_callback(const clap_host* host, clap_quick_controls_changed_flags flags) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_quick_controls_changed(flags);
   }
 
   // clap.state
 
   static void clap_host_state_mark_dirty_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     testhost->clap_host_state_mark_dirty();
   }
 
   // clap.thread-check
 
   static bool clap_host_thread_check_is_main_thread_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_thread_check_is_main_thread();
   }
 
   static bool clap_host_thread_check_is_audio_thread_callback(const clap_host* host) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_thread_check_is_audio_thread();
   }
 
   // clap.thread-pool.draft/0
 
   static bool clap_host_thread_pool_request_exec_callback(const clap_host* host, uint32_t num_tasks) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_thread_pool_request_exec(num_tasks);
   }
 
   // clap.timer-support
 
   static bool clap_host_timer_support_register_timer_callback(const clap_host* host, uint32_t period_ms, clap_id* timer_id) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_timer_support_register_timer(period_ms,timer_id);
   }
 
   static bool clap_host_timer_support_unregister_timer_callback(const clap_host* host, clap_id timer_id) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_timer_support_unregister_timer(timer_id);
   }
 
   // clap.track-info.draft/0
 
   static bool clap_host_track_info_get_callback(const clap_host* host, clap_track_info* info) {
-    CLAP_Host* testhost = (CLAP_Host*)host->host_data;
+    Host* testhost = (Host*)host->host_data;
     return testhost->clap_host_track_info_get(info);
   }
 
