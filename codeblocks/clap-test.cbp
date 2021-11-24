@@ -38,7 +38,6 @@
 			<Add library="m" />
 			<Add library="dl" />
 		</Linker>
-		<Unit filename="../src/array.h" />
 		<Unit filename="../src/clap/all.h" />
 		<Unit filename="../src/clap/audio-buffer.h" />
 		<Unit filename="../src/clap/chmap.h" />
@@ -82,9 +81,7 @@
 		<Unit filename="../src/clap/stream.h" />
 		<Unit filename="../src/clap/string-sizes.h" />
 		<Unit filename="../src/clap/version.h" />
-		<Unit filename="../src/clap_entry.hpp" />
-		<Unit filename="../src/clap_host.hpp" />
-		<Unit filename="../src/clap_instance.hpp" />
+		<Unit filename="../src/entry.h" />
 		<Unit filename="../src/extern/tinysmf.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />
@@ -92,13 +89,14 @@
 		</Unit>
 		<Unit filename="../src/extern/tinysmf.h" />
 		<Unit filename="../src/extern/vector_stdlib.h" />
-		<Unit filename="../src/list.h" />
+		<Unit filename="../src/host.h" />
+		<Unit filename="../src/instance.h" />
 		<Unit filename="../src/main.cpp" />
-		<Unit filename="../src/mid.h" />
+		<Unit filename="../src/midifile.h" />
 		<Unit filename="../src/process.h" />
 		<Unit filename="../src/system.h" />
 		<Unit filename="../src/utils.h" />
-		<Unit filename="../src/wav.h" />
+		<Unit filename="../src/wavfile.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

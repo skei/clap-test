@@ -2,12 +2,16 @@
 #define entry_included
 //----------------------------------------------------------------------
 
-// aka pluginfactory..
+/*
+  clap_plugin_entry*
+  HostedPluginEntryPoint
+*/
+
+//----------------------------------------------------------------------
 
 #include "clap/all.h"
 #include "system.h"
 #include "utils.h"
-
 #include "host.h"
 #include "instance.h"
 

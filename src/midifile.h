@@ -2,8 +2,6 @@
 #define midifile_included
 //----------------------------------------------------------------------
 
-// TODO: class-ify
-
 #include "extern/tinysmf.h"
 #include "extern/tinysmf.c"
 

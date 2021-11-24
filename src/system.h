@@ -2,13 +2,15 @@
 #define system_included
 //----------------------------------------------------------------------
 
-// system-specific stuff..
-// wrap in #ifdefs
-// (like clap/macros.h)
+/*
+  system-specific stuff..
+  wrap in #ifdefs
+*/
 
 //----------------------------------------------------------------------
 
-//SKEI: is this linux specific or portable?
+//SKEI: linux (posix?) specific..
+
 #include <dlfcn.h>
 
 //----------
