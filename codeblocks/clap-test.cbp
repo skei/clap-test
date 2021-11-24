@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="clap-test" />
+		<Option execution_dir="/home/skei/Desktop/u-he/skei/build/" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="debug">
+				<Option output="../bin/clap-test-debug" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="release">
+				<Option output="../bin/clap-test" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="../src" />
+		</Compiler>
+		<Linker>
+			<Add library="sndfile" />
+			<Add library="m" />
+			<Add library="dl" />
+		</Linker>
+		<Unit filename="../src/array.h" />
+		<Unit filename="../src/clap/all.h" />
+		<Unit filename="../src/clap/audio-buffer.h" />
+		<Unit filename="../src/clap/chmap.h" />
+		<Unit filename="../src/clap/clap.h" />
+		<Unit filename="../src/clap/color.h" />
+		<Unit filename="../src/clap/events.h" />
+		<Unit filename="../src/clap/ext/audio-ports-config.h" />
+		<Unit filename="../src/clap/ext/audio-ports.h" />
+		<Unit filename="../src/clap/ext/draft/check-for-update.h" />
+		<Unit filename="../src/clap/ext/draft/file-reference.h" />
+		<Unit filename="../src/clap/ext/draft/midi-mappings.h" />
+		<Unit filename="../src/clap/ext/draft/preset-load.h" />
+		<Unit filename="../src/clap/ext/draft/quick-controls.h" />
+		<Unit filename="../src/clap/ext/draft/thread-pool.h" />
+		<Unit filename="../src/clap/ext/draft/track-info.h" />
+		<Unit filename="../src/clap/ext/draft/tuning.h" />
+		<Unit filename="../src/clap/ext/draft/vst2-convert.h" />
+		<Unit filename="../src/clap/ext/draft/vst3-convert.h" />
+		<Unit filename="../src/clap/ext/event-filter.h" />
+		<Unit filename="../src/clap/ext/fd-support.h" />
+		<Unit filename="../src/clap/ext/gui-cocoa.h" />
+		<Unit filename="../src/clap/ext/gui-free-standing.h" />
+		<Unit filename="../src/clap/ext/gui-win32.h" />
+		<Unit filename="../src/clap/ext/gui-x11.h" />
+		<Unit filename="../src/clap/ext/gui.h" />
+		<Unit filename="../src/clap/ext/latency.h" />
+		<Unit filename="../src/clap/ext/log.h" />
+		<Unit filename="../src/clap/ext/note-name.h" />
+		<Unit filename="../src/clap/ext/params.h" />
+		<Unit filename="../src/clap/ext/render.h" />
+		<Unit filename="../src/clap/ext/state.h" />
+		<Unit filename="../src/clap/ext/thread-check.h" />
+		<Unit filename="../src/clap/ext/timer-support.h" />
+		<Unit filename="../src/clap/fixedpoint.h" />
+		<Unit filename="../src/clap/hash.h" />
+		<Unit filename="../src/clap/host.h" />
+		<Unit filename="../src/clap/id.h" />
+		<Unit filename="../src/clap/macros.h" />
+		<Unit filename="../src/clap/plugin.h" />
+		<Unit filename="../src/clap/process.h" />
+		<Unit filename="../src/clap/stream.h" />
+		<Unit filename="../src/clap/string-sizes.h" />
+		<Unit filename="../src/clap/version.h" />
+		<Unit filename="../src/clap_entry.hpp" />
+		<Unit filename="../src/clap_host.hpp" />
+		<Unit filename="../src/clap_instance.hpp" />
+		<Unit filename="../src/extern/tinysmf.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="../src/extern/tinysmf.h" />
+		<Unit filename="../src/extern/vector_stdlib.h" />
+		<Unit filename="../src/list.h" />
+		<Unit filename="../src/main.cpp" />
+		<Unit filename="../src/mid.h" />
+		<Unit filename="../src/process.h" />
+		<Unit filename="../src/system.h" />
+		<Unit filename="../src/utils.h" />
+		<Unit filename="../src/wav.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
