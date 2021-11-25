@@ -1,5 +1,5 @@
-#ifndef clap_host_included
-#define clap_host_included
+#ifndef host_included
+#define host_included
 //----------------------------------------------------------------------
 
 /*

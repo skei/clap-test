@@ -4,6 +4,8 @@
 
 #include "clap/all.h"
 
+//----------------------------------------------------------------------
+
 // ouch.. global variables..
 
 clap_event input_event;

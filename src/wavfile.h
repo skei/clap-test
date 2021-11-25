@@ -13,11 +13,11 @@
 SNDFILE* wav_open_input(SF_INFO* info, const char *path) {
   SNDFILE *snd;
   snd = sf_open(path, SFM_READ, info);
-  if (!snd) goto err_sf_open;
+  if (!snd) {
+    fprintf(stderr, "couldn't open \"%s\": %s\n", path, sf_strerror(snd));
+    return NULL;
+  }
   return snd;
-err_sf_open:
-  fprintf(stderr, "couldn't open \"%s\": %s\n", path, sf_strerror(snd));
-  return NULL;
 }
 
 //----------
@@ -40,12 +40,12 @@ SNDFILE* wav_open_output(const char *path, int sample_rate, int channels) {
     .seekable   = 0
   };
   snd = sf_open(path, SFM_WRITE, &info);
-  if (!snd) goto err_sf_open;
+  if (!snd) {
+    fprintf(stderr, "couldn't open \"%s\": %s\n", path, sf_strerror(snd));
+    return NULL;
+  }
   sf_command(snd, SFC_SET_ADD_PEAK_CHUNK, NULL, SF_FALSE);
   return snd;
-err_sf_open:
-  fprintf(stderr, "couldn't open \"%s\": %s\n", path, sf_strerror(snd));
-  return NULL;
 }
 
 //----------

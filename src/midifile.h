@@ -148,6 +148,8 @@ public:
     // MEvents[0]
     // &MEvents[0];
     // MEvents.data()
+
+    // is this correct?
     qsort( MEvents.data(), MEvents.size(), sizeof(MidiEvent*), midi_note_cmp);
 
     fclose(fp);

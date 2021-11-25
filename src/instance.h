@@ -1,5 +1,5 @@
-#ifndef clap_instance_included
-#define clap_instance_included
+#ifndef instance_included
+#define instance_included
 //----------------------------------------------------------------------
 
 /*
