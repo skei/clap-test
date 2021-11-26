@@ -488,10 +488,6 @@ private:
     clap_host_gui_resize_callback
   };
 
-  struct clap_plugin_gui_x11 MClapHostGuiX11 = {
-    clap_host_gui_x11_attach_callback
-  };
-
   struct clap_host_latency MClapHostLatency = {
     clap_host_latency_changed_callback
   };
