@@ -357,16 +357,6 @@ private: // callbacks
     return testhost->clap_host_gui_resize(width,height);
   }
 
-  // clap.gui-x11
-
-  //TODO:
-
-  static bool clap_host_gui_x11_attach_callback(const clap_plugin* plugin, const char* display_name, unsigned long window) {
-    //Host* testhost = (Host*)plugin->plugin_data;
-    //return testhost->clap_host_gui_x11_attach(plugin,display_name,window);
-    return false;
-  }
-
   // clap.latency
 
   static void clap_host_latency_changed_callback(const clap_host* host) {
