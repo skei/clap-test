@@ -4,7 +4,7 @@
 
 /*
   clap_plugin* 'wrapper'
-  PluginInstance
+  HostedPluginInstance
 */
 
 //----------------------------------------------------------------------

@@ -4,7 +4,7 @@
 
 /*
   clap_host
-  PluginHost
+  HostedPluginHost
 */
 
 #include "clap/all.h"
@@ -164,15 +164,6 @@ private: // extensions
 
   bool clap_host_gui_resize(uint32_t width, uint32_t height) {
     printf("> gui.resize(%i,%i)\n",width,height);
-    return false;
-  }
-
-  //--------------------
-  // clap.gui-x11
-  //--------------------
-
-  bool clap_host_gui_x11_attach(const clap_plugin* plugin, const char*  display_name, unsigned long window) {
-    printf("> gui-x11.attach(%s,%i)\n",display_name,(int)window);
     return false;
   }
 

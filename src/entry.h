@@ -4,7 +4,7 @@
 
 /*
   clap_plugin_entry*
-  HostedPluginEntryPoint
+  HostedPluginEntry
 */
 
 //----------------------------------------------------------------------
