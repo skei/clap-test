@@ -238,44 +238,24 @@ public:
 
 //----- mid -----
 
-//      if (MArguments.input_midi) {
-//        MidiSequence seq;
-//        int result;
-//        result = seq.load(MArguments.input_midi);
-//
-//        uint32_t num_events = seq.getNumEvents();
-//        //printf("num events: %i\n",num_events);
-//        for (uint32_t i=0; i<num_events; i++) {
-//          MidiEvent* event = seq.getEvent(i);
-//          printf("%i. time: %.3f data %02x %02x %02x\n",i,event->time,event->data[0],event->data[1],event->data[2]);
-//        }
-//      }
-
       if (MArguments.input_midi) {
         MidiFile midifile;
-        int result;
-        result = midifile.load(MArguments.input_midi);
+        /*int result;
+        result =*/ midifile.load(MArguments.input_midi);
+
         MidiSequence* seq = midifile.getMidiSequence();
-        printf("seq.name:       %s\n",seq->name);
-        printf("seq.format:     %i\n",seq->format);
-        printf("seq.num_tracks: %i\n",seq->num_tracks);
-        printf("seq.tpq:        %i\n",seq->tpq);
-//  uint32_t            format      = 0;
-//  uint32_t            num_tracks  = 0;
-//  uint32_t            tpq         = 0; //MTicksPerQuarterNote
-//  MidiFileTrackArray  tracks      = {};
 
-        for (uint32_t t=0; t<seq->num_tracks; t++) {
-          MidiFileTrack* track = seq->tracks[t];
-          //MidiEvent* event = seq.getEvent(i);
-          //printf("%i. time: %.3f data %02x %02x %02x\n",i,event->time,event->data[0],event->data[1],event->data[2]);
-          printf("track %i name %s num_events %i\n",t,track->name,track->num_events);
-          for (uint32_t e=0; e<track->num_events; e++) {
-            MidiFileEvent* event = track->events[e];
+        seq->calc_offsets();
+        midifile.print();
 
-            printf("  %i. type %i offset %i msg %02x,%02x,%02x\n",e,event->type,event->offset,event->msg1,event->msg2,event->msg3);
-          }
-        }
+        printf("\n");
+        printf("  seq.name:       %s\n",seq->name);
+        printf("  seq.format:     %i\n",seq->format);
+        printf("  seq.num_tracks: %i\n",seq->num_tracks);
+        printf("  seq.tpq:        %i\n",seq->tpq);
+        printf("  seq.tempo:      %i\n",seq->tempo);
+        printf("\n");
+
       }
 
 //----- -----

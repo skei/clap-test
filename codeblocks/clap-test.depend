@@ -276,3 +276,223 @@
 
 1637621916 /home/skei/Desktop/u-he/clap-test/src/array.h
 
+1638301180 source:/DISKS/sda2/code/git/clap-test/src/main.cpp
+	<assert.h>
+	<getopt.h>
+	<memory.h>
+	<stdint.h>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	"entry.h"
+	"process.h"
+	"midi_file.h"
+	"wavfile.h"
+
+1638097354 /DISKS/sda2/code/git/clap-test/src/entry.h
+	"clap/all.h"
+	"system.h"
+	"utils.h"
+	"host.h"
+	"instance.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/all.h
+	"clap.h"
+	"ext/audio-ports.h"
+	"ext/audio-ports-config.h"
+	"ext/gui.h"
+	"ext/gui-x11.h"
+	"ext/gui-win32.h"
+	"ext/gui-cocoa.h"
+	"ext/gui-free-standing.h"
+	"ext/log.h"
+	"ext/params.h"
+	"ext/render.h"
+	"ext/state.h"
+	"ext/latency.h"
+	"ext/thread-check.h"
+	"ext/timer-support.h"
+	"ext/fd-support.h"
+	"ext/note-name.h"
+	"ext/event-filter.h"
+	"ext/draft/preset-load.h"
+	"ext/draft/quick-controls.h"
+	"ext/draft/thread-pool.h"
+	"ext/draft/track-info.h"
+	"ext/draft/tuning.h"
+	"ext/draft/file-reference.h"
+	"ext/draft/vst2-convert.h"
+	"ext/draft/vst3-convert.h"
+	"ext/draft/midi-mappings.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/clap.h
+	"plugin.h"
+	"host.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/plugin.h
+	"macros.h"
+	"host.h"
+	"process.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/macros.h
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/host.h
+	"version.h"
+
+1637657430 /DISKS/sda2/code/git/clap-test/src/clap/version.h
+	<stdbool.h>
+	<stdint.h>
+	"macros.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/process.h
+	"events.h"
+	"audio-buffer.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/events.h
+	<stdbool.h>
+	<stddef.h>
+	"fixedpoint.h"
+	"id.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/fixedpoint.h
+	<stdint.h>
+	"macros.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/id.h
+	<stdint.h>
+	"macros.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/audio-buffer.h
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/audio-ports.h
+	"../clap.h"
+	"../chmap.h"
+	"../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/chmap.h
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/string-sizes.h
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/audio-ports-config.h
+	"../clap.h"
+	"../chmap.h"
+	"../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/gui.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/gui-x11.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/gui-win32.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/gui-cocoa.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/gui-free-standing.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/log.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/params.h
+	"../clap.h"
+	"../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/render.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/state.h
+	"../clap.h"
+	"../stream.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/stream.h
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/latency.h
+	"../clap.h"
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/thread-check.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/timer-support.h
+	<stddef.h>
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/fd-support.h
+	<stddef.h>
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/note-name.h
+	"../clap.h"
+	"../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/event-filter.h
+	"../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/preset-load.h
+	"../../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/quick-controls.h
+	"../../clap.h"
+	"../../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/thread-pool.h
+	"../../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/track-info.h
+	"../../clap.h"
+	"../../chmap.h"
+	"../../color.h"
+	"../../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/color.h
+	<stdint.h>
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/tuning.h
+	"../../clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/file-reference.h
+	"../../clap.h"
+	"../../hash.h"
+	"../../string-sizes.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/hash.h
+	"clap.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/vst2-convert.h
+	"../../clap.h"
+	"../../stream.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/vst3-convert.h
+	"../../clap.h"
+	"../../stream.h"
+
+1635803083 /DISKS/sda2/code/git/clap-test/src/clap/ext/draft/midi-mappings.h
+	"../../clap.h"
+
+1637797681 /DISKS/sda2/code/git/clap-test/src/system.h
+	<dlfcn.h>
+
+1637619763 /DISKS/sda2/code/git/clap-test/src/utils.h
+
+1637892088 /DISKS/sda2/code/git/clap-test/src/host.h
+	"clap/all.h"
+
+1638102955 /DISKS/sda2/code/git/clap-test/src/instance.h
+	"clap/all.h"
+
+1638276385 /DISKS/sda2/code/git/clap-test/src/process.h
+	"clap/all.h"
+
+1638302932 /DISKS/sda2/code/git/clap-test/src/midi_file.h
+	<vector>
+
+1637798011 /DISKS/sda2/code/git/clap-test/src/wavfile.h
+	<sndfile.h>
+
