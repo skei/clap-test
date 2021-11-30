@@ -86,7 +86,10 @@ public:
   //----------
 
   bool activate(float ASampleRate) {
+    // 0.14.0
     return MClapPlugin->activate(MClapPlugin,ASampleRate);
+    // 0.15.0
+    //return MClapPlugin->activate(MClapPlugin,ASampleRate,1,4096);
   }
 
   //----------
