@@ -10,8 +10,6 @@
 #include "entry.h"
 #include "process.h"
 
-//#include "midifile.h"
-
 #include "midi_file.h"
 #include "wavfile.h"
 
