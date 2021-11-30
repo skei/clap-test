@@ -234,29 +234,19 @@ public:
   int main(int argc, char** argv) {
     if (parseArguments(argc,argv)) {
 
-//----- mid -----
+      //----- mid -----
 
       if (MArguments.input_midi) {
+
         MidiFile midifile;
         /*int result;
         result =*/ midifile.load(MArguments.input_midi);
-
         MidiSequence* seq = midifile.getMidiSequence();
-
-        seq->calc_offsets();
+        seq->calc_time();
         midifile.print();
-
-        printf("\n");
-        printf("  seq.name:       %s\n",seq->name);
-        printf("  seq.format:     %i\n",seq->format);
-        printf("  seq.num_tracks: %i\n",seq->num_tracks);
-        printf("  seq.tpq:        %i\n",seq->tpq);
-        printf("  seq.tempo:      %i\n",seq->tempo);
-        printf("\n");
-
       }
 
-//----- -----
+      //----- -----
 
       if (MEntry.load(MArguments.plugin_path)) {
 
@@ -326,7 +316,6 @@ public:
 //----------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  //PRINT("hello world\n");
   CLAP_Test test;
   return test.main(argc,argv);
 }

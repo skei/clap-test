@@ -2,15 +2,6 @@
 #define midi_file_included
 //----------------------------------------------------------------------
 
-// http://www.somascape.org/midi/tech/mfile.html
-// http://www.music.mcgill.ca/~ich/classes/mumt306/StandardMIDIfileformat.html
-
-/*
-  does a FF03 break the 'current' track? (it looks like so in Jambala8.mid)
-*/
-
-//----------------------------------------------------------------------
-
 #include <vector>
 
 //----------------------------------------------------------------------
@@ -99,11 +90,15 @@ struct MidiTrack {
   uint32_t        num_events  = 0;
   MidiEventArray  events      = {};
 
+  //----------
+
   MidiTrack() {
     name = nullptr;
     num_events = 0;
     events = {};
   }
+
+  //----------
 
   ~MidiTrack() {
     if (name) free(name);
@@ -111,6 +106,8 @@ struct MidiTrack {
       delete events[i];
     }
   }
+
+  //----------
 
   // assume non-zero terminated
   void setName(const char* ptr, uint32_t length) {
@@ -137,12 +134,14 @@ struct MidiSequence {
   char*           name          = nullptr;
   uint32_t        format        = 0;
   uint32_t        num_tracks    = 0;
-  uint32_t        tpq           = 0; //MTicksPerQuarterNote
+  uint32_t        tpq           = 0;
   MidiTrackArray  tracks        = {};
 
   uint32_t        tempo         = 0.0;
   uint32_t        timesig_num   = 0;
   uint32_t        timesig_denom = 0;
+
+  //----------
 
   MidiSequence() {
     name = nullptr;
@@ -152,12 +151,16 @@ struct MidiSequence {
     tracks      = {};
   }
 
+  //----------
+
   ~MidiSequence() {
     if (name) free(name);
     for (uint32_t i=0; i<tracks.size(); i++) {
       delete tracks[i];
     }
   }
+
+  //----------
 
   void setName(const char* ptr, uint32_t length) {
     if (name) free(name);
@@ -166,51 +169,13 @@ struct MidiSequence {
     name[length] = 0;
   }
 
-  //float v = (float)seq->tempo / 1000000.0;
-  //printf("  sec  per qnote:  %.3f\n", v);
-  //printf("  ticks per qnote: %i\n", seq->tpq);
+  //----------
 
-  //    The "division" header field is a 16 bits number, meaning the ticks per
-  //    quarter note (when it is a positive number). (Pg. 4)
-  //    The delta times are expressed in ticks. (Pg. 5)
-  //    The "set tempo" meta event tells you the quarter note duration in
-  //    microseconds. (Pg. 9)
-  //
-  //    tempo / division = quarter note duration in microseconds
-  //    / ticks per quarter note = duration of one tick in microseconds.
-  //    To convert microseconds into milliseconds, just divide by 1000.
-
-  // https://stackoverflow.com/questions/2038313/converting-midi-ticks-to-actual-playback-seconds
-
-  //uint32_t  us_per_qnote    = seq->tempo; // <Tempo in latest Set Tempo event>
-  //uint32_t  ticks_per_qnote = seq->tpq; // <PPQ from the header>
-  //float     us_per_tick     = (float)us_per_qnote / (float)ticks_per_qnote;
-  //float     sec_per_tick    = us_per_tick / 1000000.0;
-  //
-  //printf("µs per qnote    %i\n",us_per_qnote);
-  //printf("ticks per qnote %i\n",ticks_per_qnote);
-  //printf("µs per tick     %f\n",us_per_tick);
-  //printf("sec per tick    %f\n",sec_per_tick);
-  //printf("\n");
-
-  void calc_offsets() {
-    //printf("tempo: %i tpq %i\n",tempo, tpq);
-
+  void calc_time() {
     uint32_t  us_per_qnote    = tempo; // <Tempo in latest Set Tempo event>
     uint32_t  ticks_per_qnote = tpq; // <PPQ from the header>
     float     us_per_tick     = (float)us_per_qnote / (float)ticks_per_qnote;
-    //float     ms_per_tick     = us_per_tick / 1000.0;
     float     s_per_tick      = us_per_tick / 1000000.0;
-
-//    printf("  tempo           %i\n",tempo);
-//    printf("  tpq             %i\n",tpq);
-//    printf("\n");
-//    printf("  us_per_qnote    %i\n",us_per_qnote);
-//    printf("  ticks_per_qnote %i\n",ticks_per_qnote);
-//    printf("  us_per_tick     %f\n",us_per_tick);
-//    printf("  ms_per_tick     %f\n",ms_per_tick);
-//    printf("  s_per_tick      %f\n",s_per_tick);
-
     for (uint32_t t=0; t<num_tracks; t++) {
       MidiTrack* track = tracks[t];
       uint32_t num_events = track->num_events;
@@ -220,7 +185,6 @@ struct MidiSequence {
         delta += event->delta;
         float time = (float)delta * (float)s_per_tick;
         event->time = time;
-        //printf("track %i event %i | delta %i | %02x %02x %02x | time %i offset %f\n",t,e,event->delta,event->msg1,event->msg2,event->msg3,time,offset);
       }
     }
   }
@@ -251,7 +215,8 @@ private:
   MidiTrack*    MCurrentTrack    = nullptr;
   MidiSequence* MSequence        = nullptr;
 
-  uint32_t      MSplitTracks     = 0;
+//uint32_t      MSplitTracks     = 0;
+
 //------------------------------
 public:
 //------------------------------
@@ -271,7 +236,6 @@ public:
 //------------------------------
 
   uint32_t load(uint8_t* ABuffer, uint32_t ASize) {
-    //Print("loading buffer %p size %i\n",ABuffer,ASize);
     MBuffer     = ABuffer;
     MBufferPtr  = ABuffer;
     MBufferSize = ASize;
@@ -284,12 +248,11 @@ public:
 
   uint32_t load(const char* AFilename) {
     MSequence->setName(AFilename,strlen(AFilename));
-    //Print("loading file %s\n",AFilename);
     FILE* fp = fopen(AFilename,"rb");
     fseek(fp,0,SEEK_END);
     uint32_t size = ftell(fp);
-    fseek(fp,0L,SEEK_SET); //rewind(MFile);
-    uint8_t* buffer = (uint8_t*)malloc(size);
+    fseek(fp,0L,SEEK_SET);
+    uint8_t* buffer = (uint8_t*)malloc(size); // where is this deleted?
     fread(buffer,1,size,fp);
     fclose(fp);
     uint32_t result = load(buffer,size);
@@ -311,36 +274,6 @@ public:
   MidiSequence* getMidiSequence() {
     return MSequence;
   }
-
-  //----------
-
-  // https://www.midi.org/forum/9598-delta-times-and-ticks
-
-  //function reCalcNotesTime(BPM) {
-  //  percBPM = OLDBPM / BPM;
-  //  for (var i=1; i<maxtrack; i++) {
-  //    for (var j=0; j<track[i].midiMess.length; j++) {
-  //      if (track[i].midiMess[j].time != 0) {
-  //        track[i].midiMess[j].time = track[i].midiMess[j].time * percBPM;
-  //      }
-  //    }
-  //  }
-  //}
-
-  /*
-    https://www.midi.org/forum/10424-calculating-millisecond-time-from-delta-time
-
-    SMF Header = See "RP-001_v1-0_Standard_MIDI_Files_Specification_96-1-4.pdf"
-    https://www.midi.org/specifications/file-format-specifications/standard-midi-files
-    The "division" header field is a 16 bits number, meaning the ticks per
-    quarter note (when it is a positive number). (Pg. 4)
-    The delta times are expressed in ticks. (Pg. 5)
-    The "set tempo" meta event tells you the quarter note duration in
-    microseconds. (Pg. 9)
-    tempo / division = quarter note duration in microseconds
-    / ticks per quarter note = duration of one tick in microseconds.
-    To convert microseconds into milliseconds, just divide by 1000.
-  */
 
   //----------
 
@@ -374,7 +307,7 @@ public:
     else { printf("sequence == null\n"); }
   }
 
-  //
+  //----------
 
   void print_event(uint32_t i, MidiEvent* event) {
     if (event->msg1 < 0xF0) {
@@ -521,18 +454,20 @@ private:
 
   //----------
 
-//  uint32_t read_variable() {
-//    uint32_t shift = 7; // 0;
-//    uint8_t byte = read_byte();
-//    uint32_t sum = (byte & 0x7f);
-//    while (byte & 0x80) {
-//      byte = read_byte();
-//      //sum += (byte & 0x7f) << shift;
-//      sum = (sum << shift) + (byte & 0x7f);
-//      shift += 7;
-//    }
-//    return sum;
-//  }
+  //uint32_t read_variable() {
+  //  uint32_t shift = 7; // 0;
+  //  uint8_t byte = read_byte();
+  //  uint32_t sum = (byte & 0x7f);
+  //  while (byte & 0x80) {
+  //    byte = read_byte();
+  //    //sum += (byte & 0x7f) << shift;
+  //    sum = (sum << shift) + (byte & 0x7f);
+  //    shift += 7;
+  //  }
+  //  return sum;
+  //}
+
+  //----------
 
   uint32_t read_variable() {
     uint8_t   c;
@@ -608,27 +543,18 @@ private:
   */
 
   void read_header() {
-    //printf("Header:\n");
     uint32_t id = read_uint(); // "MThd" (4D,54,68,64)
-    //printf("  0x%08x : header.id (%c%c%c%c)\n",id, ((id&0xff000000)>>24), ((id&0x00ff0000)>>16), ((id&0x0000ff00)>>8), (id&0xff) );
     if (id != 0x4d546864) { printf("wrong file header id\n"); return; }
     uint32_t size = read_uint();
-    //printf("  0x%08x (%i) : header.size\n",size,size);
     if (size != 6) { printf("wrong file header size\n"); return; }
     uint16_t v1 = read_short();
     uint16_t v2 = read_short();
     uint16_t v3 = read_short();
-
-printf("\n  format %04x ntrks %04x division %04x\n\n",v1,v2,v3);
-
+    //printf("\n  format %04x ntrks %04x division %04x\n\n",v1,v2,v3);
     MSequence->format     = v1;
     MSequence->num_tracks = v2;
     //if (v3 & 0x8000) {}
     MSequence->tpq        = v3;
-    //MSequence->setName("",0);
-    //printf("  0x%04x: format (%i)\n",v1,v1);
-    //printf("  0x%04x: num tracks (%i)\n",v2,v2);
-    //printf("  0x%04x: ticks per quarter note (%i)\n",v3,v3);
   }
 
   //----------
@@ -671,18 +597,18 @@ printf("\n  format %04x ntrks %04x division %04x\n\n",v1,v2,v3);
   //----------
 
   /*
-  The syntax of an MTrk event is very simple:
-    <MTrk event> = <delta-time><event>
+    The syntax of an MTrk event is very simple:
+      <MTrk event> = <delta-time><event>
 
-  <delta-time> is stored as a variable-length quantity. It represents the
-  amount of time before the following event. If the first event in a track
-  occurs at the very beginning of a track, or if two events occur
-  simultaneously, a delta-time of zero is used. Delta-times are always present.
-  (Not storing delta-times of 0 requires at least two bytes for any other
-  value, and most delta-times aren't zero.) Delta-time is in some fraction of a
-  beat (or a second, for recording a track with SMPTE times), as specified in
-  the header chunk.
-*/
+    <delta-time> is stored as a variable-length quantity. It represents the
+    amount of time before the following event. If the first event in a track
+    occurs at the very beginning of a track, or if two events occur
+    simultaneously, a delta-time of zero is used. Delta-times are always present.
+    (Not storing delta-times of 0 requires at least two bytes for any other
+    value, and most delta-times aren't zero.) Delta-time is in some fraction of a
+    beat (or a second, for recording a track with SMPTE times), as specified in
+    the header chunk.
+  */
 
   uint32_t read_track_events(uint32_t ASize) {
     MNumTrackEvents = 0;
@@ -726,8 +652,6 @@ private:
       event = read_byte();
       //MRunningStatus = event;
     }
-
-    //if (event < 128)
     MRunningStatus = event;
 
     // midi events
@@ -736,51 +660,39 @@ private:
       case 0x80:
         index = read_byte();
         value = read_byte();
-        //printf("  0x%02x %i %i note off (delta %i)\n",event,index,value,ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
       case 0x90:
         index = read_byte();
         value = read_byte();
-        //printf("  0x%02x %i %i note on (delta %i)\n",event,index,value,ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
       case 0xA0:
         index = read_byte();
         value = read_byte();
-        //printf("  0x%02x %i %i key aftertouch (delta %i)\n",event,index,value,ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
       case 0xB0:
         index = read_byte();
         value = read_byte();
-        //printf("  0x%02x %i %i control change (delta %i)\n",event,index,value,ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
       case 0xC0:
         index = read_byte();
-        value = read_byte();        // 0x..7x (running status?)
-        //printf("  0x%02x %i %i program change (delta %i)\n",event,index,value,ADeltaTime);
+        value = read_byte();
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
       case 0xD0:
         index = read_byte();
         value = read_byte();
-        //printf("  0x%02x %i %i channel aftertouch (delta %i)\n",event,index,value,ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,event,index,value);
         MCurrentTrack->events.push_back(midi_event);
         break;
-
-      /*
-        The pitch wheel is measured by a fourteen bit value.
-        Centre (no pitch change) is 2000H
-      */
-
       case 0xE0:
         index = read_byte();
         value = read_byte();
@@ -791,13 +703,12 @@ private:
       case 0xF0: // system
         parse_event_system(event,ADeltaTime);
         break;
-
-//      default:
-//        // 0x..7x (running status?)
-//        printf("  0x%02x unknown event (delta %i)\n",event,ADeltaTime);
-//        break;
-
+      //default:
+      //  // 0x..7x (running status?)
+      //  printf("  0x%02x unknown event (delta %i)\n",event,ADeltaTime);
+      //  break;
     } // switch
+
   }
 
   //----------
@@ -831,12 +742,10 @@ private:
 
       case 0xF0:
         length = read_variable();
-        //Print("F0 sysex length %i\n",length);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         midi_event->setData(MBufferPtr,length);
         MCurrentTrack->events.push_back(midi_event);
         MBufferPtr += length;
-        //printf("  0xF0 sysex. length:%i <..> (delta %i)\n",length, ADeltaTime);
         break;
 
       /*
@@ -857,12 +766,10 @@ private:
       case 0xF7:
         // F0 <length> <bytes to be transmitted after F0>
         length = read_variable();
-        //Print("F7 sysex length %i\n",length);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         midi_event->setData(MBufferPtr,length);
         MCurrentTrack->events.push_back(midi_event);
         MBufferPtr += length;
-        //printf("  0xF7 sysex. length:%i <..>(delta %i)\n",length,ADeltaTime);
         break;
 
       /*
@@ -871,13 +778,11 @@ private:
       */
 
       case 0xF8:
-        //printf("  0xF8 timing clock (delta %i)\n",ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         MCurrentTrack->events.push_back(midi_event);
         break;
 
       case 0xF9: // undefined
-        //printf("  0xF9 undefined (delta %i)\n",ADeltaTime);
         break;
 
       /*
@@ -887,7 +792,6 @@ private:
       */
 
       case 0xFA:
-        //printf("  0xFA start sequence (delta %i)\n",ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         MCurrentTrack->events.push_back(midi_event);
         break;
@@ -898,7 +802,6 @@ private:
       */
 
       case 0xFB:
-        //printf("  0xFB continue sequence (delta %i)\n",ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         MCurrentTrack->events.push_back(midi_event);
         break;
@@ -909,13 +812,11 @@ private:
       */
 
       case 0xFC:
-        //printf("  0xFC stop sequence (delta %i)\n",ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         MCurrentTrack->events.push_back(midi_event);
         break;
 
       case 0xFD: // undefined
-        //printf("  0xFD undefined (delta %i)\n",ADeltaTime);
         break;
 
       /*
@@ -927,7 +828,6 @@ private:
       */
 
       case 0xFE: // active sensing
-        //printf("  0xFE active sensing (delta %i)\n",ADeltaTime);
         midi_event = new MidiEvent(ADeltaTime,AEvent,0,0);
         MCurrentTrack->events.push_back(midi_event);
         break;
@@ -1009,7 +909,7 @@ private:
     char* ptr = nullptr;
 
     uint8_t   meta = read_byte();
-    uint32_t  length;// = read_variable();
+    uint32_t  length;
 
     switch(meta) {
 
@@ -1033,21 +933,14 @@ private:
 
       case 0x00:
 
-//MCurrentTrack->num_events = MNumTrackEvents;
-//start_new_track();
-//MNumTrackEvents = 1;
-//MSplitTracks += 1;
-
         length = read_variable();
         assert(length == 2);
         v1 = read_byte();
         v2 = read_byte();
         //v = (v1<<8) + v2;
-
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1,v2);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF00 2 %i %i sequence number (delta %i)\n",v1,v2,ADeltaTime);
         break;
 
       /*
@@ -1071,7 +964,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF01 %i '%s' text event (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1090,7 +982,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF02 %i '%s' copyright info (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1103,17 +994,11 @@ private:
 
       case 0x03:
 
-//MCurrentTrack->num_events = MNumTrackEvents - 1;
-//start_new_track();
-//MNumTrackEvents = 1;
-//MSplitTracks += 1;
-
         length = read_variable();
         ptr = (char*)read_data(length);
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF03 %i '%s' track/sequence name (delta %i)\n",length,ptr,ADeltaTime);
         MCurrentTrack->setName(ptr,length);
         break;
 
@@ -1131,7 +1016,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF04 %i '%s' track instrument name (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1146,7 +1030,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF05 %i '%s' lyrics (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1162,7 +1045,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF06 %i '%s' marker (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1178,7 +1060,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF07 %i '%s' cue point (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1190,7 +1071,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF08 %i '%s' program name (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1202,7 +1082,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setText((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF09 %i '%s' device name (delta %i)\n",length,ptr,ADeltaTime);
         break;
 
       /*
@@ -1217,9 +1096,9 @@ private:
         format.
       */
 
-//  case TINYSMF_META_TYPE_MIDI_CHANNEL:
-//    ev->cooked.midi_channel = ev->raw[0];
-//    break;
+      //  case TINYSMF_META_TYPE_MIDI_CHANNEL:
+      //    ev->cooked.midi_channel = ev->raw[0];
+      //    break;
 
       case 0x20:
         length = read_variable();
@@ -1228,7 +1107,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF20 1 %i midi channel prefix (delta %i)\n",v1,ADeltaTime);
         break;
 
       /*
@@ -1243,7 +1121,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF21 1 %i midi port (delta %i)\n",v1,ADeltaTime);
         break;
 
       /*
@@ -1259,7 +1136,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         //midi_event->setData((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF2f 0 end track (delta %i)\n",ADeltaTime);
         MEndOfTrack = true;
         break;
 
@@ -1287,19 +1163,9 @@ private:
         v2 = read_byte();
         v3 = read_byte();
         MSequence->tempo = (v1 << 16) + (v2 << 8) + v3;
-
-//        //v = (v1<<16) + (v2<<8) + v3;
-//        {
-//          // v = microseconds per quarter-note
-//          printf("µs per quarter note: %.3f\n",v);
-//          float v = (v1<<16) + (v2<<8) + v3;
-//        }
-
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1,v2,v3);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF51 3 %02x %02x %02x (%i) set tempo (delta %i)\n",v1,v2,v3,v,ADeltaTime);
-
         break;
 
       /*
@@ -1326,7 +1192,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1,v2,v3,v4,v5);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF54 5 %02x %02x %02x %02x %02x SMPTE Offset (delta %i)\n",v1,v2,v3,v4,v5,ADeltaTime);
         //MSequence->smpte_offset =
         break;
 
@@ -1361,7 +1226,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1,v2,v3,v4);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF58 4 %02x %02x %02x %02x time signature (delta %i)\n",v1,v2,v3,v4,ADeltaTime);
         MSequence->timesig_num = v1;
         MSequence->timesig_denom = v2;
         //MSequence->midi_clocks_in_metronome_click = v3;
@@ -1387,7 +1251,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData(v1,v2);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF59 2 %02x %02x key signature (delta %i)\n",v1,v2,ADeltaTime);
         //MSequence->keysig =
         break;
 
@@ -1410,7 +1273,6 @@ private:
         midi_event = new MidiEvent(ADeltaTime,AEvent,meta,0);
         midi_event->setData((uint8_t*)ptr,length);
         MCurrentTrack->events.push_back(midi_event);
-        //printf("  0xFF7f %i <..> sequencer specific (delta %i)\n",length,ADeltaTime);
         break;
 
       /*
