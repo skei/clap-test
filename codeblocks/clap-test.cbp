@@ -92,6 +92,7 @@
 		<Unit filename="../src/host.h" />
 		<Unit filename="../src/instance.h" />
 		<Unit filename="../src/main.cpp" />
+		<Unit filename="../src/midi_file.h" />
 		<Unit filename="../src/midifile.h" />
 		<Unit filename="../src/process.h" />
 		<Unit filename="../src/system.h" />

@@ -87,6 +87,7 @@ public:
     if (AIndex < MClapEntry->get_plugin_count()) {
       const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
       if (descriptor) {
+        printf("  (host: %p, plugin_id: %s\n",MHost.getClapHost(),descriptor->id);
         const clap_plugin* plugin = MClapEntry->create_plugin( MHost.getClapHost(), descriptor->id );
         if (plugin) {
           printf("# plugin created\n");
