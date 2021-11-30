@@ -10,8 +10,8 @@
 #include "entry.h"
 #include "process.h"
 
+#include "audio_file.h"
 #include "midi_file.h"
-#include "wavfile.h"
 
 //#define PRINT printf
 //#define PRINT(...) {}
@@ -25,8 +25,8 @@
 typedef struct arguments_t {
   const char* plugin_path;
   int         plugin_index;
-  const char* input_wav;
-  const char* output_wav;
+  const char* input_audio;
+  const char* output_audio;
   const char* input_midi;
   const char* output_midi;
   float       sample_rate;
@@ -153,7 +153,7 @@ public:
             break;
 
           case 'i':
-            MArguments.input_wav = optarg;
+            MArguments.input_audio = optarg;
             if (endptr == optarg) {
               printf("invalid input wav: %s\n\n", optarg);
               return false;
@@ -161,7 +161,7 @@ public:
             break;
 
           case 'o':
-            MArguments.output_wav = optarg;
+            MArguments.output_audio = optarg;
             if (endptr == optarg) {
               printf("invalid output wav: %s\n\n", optarg);
               return false;
@@ -232,9 +232,41 @@ public:
   //----------
 
   int main(int argc, char** argv) {
+
     if (parseArguments(argc,argv)) {
 
-      //----- mid -----
+      //DEBUG: midi
+
+      if (MArguments.input_audio) {
+
+        AudioFile audio;
+        float buffer1[256];
+        float buffer2[256];
+        float* buffers[2] = { buffer1, buffer2 };
+
+        printf("\n");
+        printf("loading audio file: %s\n",MArguments.input_audio);
+        printf("\n");
+
+        if (audio.open(MArguments.input_audio)) {
+          SF_INFO* info = audio.getInfo();
+          printf("  MInfo.frames      %i\n",(int)info->frames);
+          printf("  MInfo.samplerate  %i\n",info->samplerate);
+          printf("  MInfo.channels    %i\n",info->channels);
+          printf("  MInfo.format      %i\n",info->format);
+          printf("  MInfo.sections    %i\n",info->sections);
+          printf("  MInfo.seekable    %i\n",info->seekable);
+          printf("\n");
+          printf("reading from file\n");
+          audio.read(2,256,buffers);
+          printf("read ok\n");
+          audio.close();
+        }
+        else printf("couldn't open audio input: %s\n",MArguments.input_audio);
+
+      }
+
+      //DEBUG: midi
 
       if (MArguments.input_midi) {
 
@@ -245,8 +277,6 @@ public:
         seq->calc_time();
         midifile.print();
       }
-
-      //----- -----
 
       if (MEntry.load(MArguments.plugin_path)) {
 

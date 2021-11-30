@@ -252,10 +252,11 @@ public:
     fseek(fp,0,SEEK_END);
     uint32_t size = ftell(fp);
     fseek(fp,0L,SEEK_SET);
-    uint8_t* buffer = (uint8_t*)malloc(size); // where is this deleted?
-    fread(buffer,1,size,fp);
+    uint8_t* buffer = (uint8_t*)malloc(size); // deleted in unload (as MBuffer)
+    __attribute__ ((unused)) uint32_t result; // shut up, gcc!
+    result = fread(buffer,1,size,fp);
     fclose(fp);
-    uint32_t result = load(buffer,size);
+    result = load(buffer,size);
     //free(buffer);
     return result;
   }
