@@ -218,7 +218,7 @@ int read_track(struct tinysmf_parser_ctx *ctx, FILE *f, ssize_t avail) {
     switch (ev_type) {
       case 0xF0:
       case 0xF7:
-        puts("sysex");
+        //puts("sysex");
         res = read_sysex_event(ctx, f, avail, delta);
         /* fall-through */
       case 0xF1:
