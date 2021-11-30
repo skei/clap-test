@@ -16,6 +16,8 @@
 //#define PRINT printf
 //#define PRINT(...) {}
 
+#define AUDIO_SIZE (16384)
+
 //----------------------------------------------------------------------
 //
 //
@@ -40,6 +42,20 @@ typedef struct arguments_t {
 
 //----------------------------------------------------------------------
 
+/*
+  name    the name of the long option.
+  has_arg no_argument (or 0) if the option does not take an argument;
+          required_argument (or 1) if the option requires an argument; or
+          optional_argument (or 2) if the option takes an optional argument.
+  flag    specifies how results are returned for a long option. If flag is
+          NULL, then getopt_long() returns val. (For example, the calling
+          program may set val to the equivalent short option character.)
+          Otherwise, getopt_long() returns 0, and flag points to a variable
+          which is set to val if the option is found, but left unchanged if
+          the option is not found.
+  val     the value to return, or to load into the variable pointed to by flag
+*/
+
 const struct option cmdline_args[] = {
   {"help",              no_argument,       0, 'h'},
   {"plugin",            required_argument, 0, 'p'},
@@ -63,7 +79,37 @@ const struct option cmdline_args[] = {
 
 //----------
 
+/*
+  optstring is a string containing the legitimate option characters. If such a
+  character is followed by a colon, the option requires an argument, so
+  getopt() places a pointer to the following text in the same argv-element, or
+  the text of the following argv-element, in optarg. Two colons mean an option
+  takes an optional arg; if there is text in the current argv-element (i.e., in
+  the same word as the option name itself, for example, "-oarg"), then it is
+  returned in optarg, otherwise optarg is set to zero. This is a GNU extension.
+  If optstring contains W followed by a semicolon, then -W foo is treated as
+  the long option --foo. (The -W option is reserved by POSIX.2 for
+  implementation extensions.)
+*/
+
 const char* OPTION_STRING = "hP:I:i:o:m:s:b:c:d:lDz";
+
+const char* USAGE_STRING =
+  //"\nusage: %s [options...] <plugin object> [sub-plugin ID]\n"
+  "usage: %s [options...]\n"
+  "  -h, --help                     display this help\n"
+  "  -P, --plugin <path>            plugin\n"
+  "  -I, --index <num>              plugin <index>\n"
+  "  -i, --input-wav <path>         input wav file\n"
+  "  -o, --output-wav <path>        output wav file\n"
+  "  -m, --input-midi <path>        input midi file\n"
+  "  -s, --sample-rate <samples>    sample rate\n"
+  "  -b, --block-size <samples>     block size\n"
+  "  -c, --channels <count>         channels\n"
+  "  -d, --decay-seconds <seconds>  decay-seconds\n"
+  "  -l, --list-plugins             list plugins\n"
+  "  -D, --print-descriptor         print descriptor\n"
+  "  -z, --fuzz-block-size          fuzz block size\n";
 
 //----------------------------------------------------------------------
 //
@@ -99,24 +145,7 @@ public:
 
   void printUsage(const char* APath) {
     const char* filename = get_filename_from_path(APath);
-    printf(
-      //"\nusage: %s [options...] <plugin object> [sub-plugin ID]\n"
-      "usage: %s [options...]\n"
-      "  -h, --help                     display this help\n"
-      "  -P, --plugin <path>            plugin\n"
-      "  -I, --index <num>              plugin <index>\n"
-      "  -i, --input-wav <path>         input wav file\n"
-      "  -o, --output-wav <path>        output wav file\n"
-      "  -m, --input-midi <path>        input midi file\n"
-      "  -s, --sample-rate <samples>    sample rate\n"
-      "  -b, --block-size <samples>     block size\n"
-      "  -c, --channels <count>         channels\n"
-      "  -d, --decay-seconds <seconds>  decay-seconds\n"
-      "  -l, --list-plugins             list plugins\n"
-      "  -D, --print-descriptor         print descriptor\n"
-      "  -z, --fuzz-block-size          fuzz block size\n"
-      , filename
-    );
+    printf(USAGE_STRING,filename);
   }
 
   //----------
@@ -235,21 +264,22 @@ public:
 
     if (parseArguments(argc,argv)) {
 
-      //DEBUG: midi
+      //DEBUG: audio
 
       if (MArguments.input_audio) {
 
-        AudioFile audio;
-        float buffer1[256];
-        float buffer2[256];
+        AudioFile in_audio;
+        AudioFile out_audio;
+        float buffer1[AUDIO_SIZE];
+        float buffer2[AUDIO_SIZE];
         float* buffers[2] = { buffer1, buffer2 };
 
         printf("\n");
         printf("loading audio file: %s\n",MArguments.input_audio);
         printf("\n");
 
-        if (audio.open(MArguments.input_audio)) {
-          SF_INFO* info = audio.getInfo();
+        if (in_audio.open(MArguments.input_audio)) {
+          SF_INFO* info = in_audio.getInfo();
           printf("  MInfo.frames      %i\n",(int)info->frames);
           printf("  MInfo.samplerate  %i\n",info->samplerate);
           printf("  MInfo.channels    %i\n",info->channels);
@@ -258,12 +288,21 @@ public:
           printf("  MInfo.seekable    %i\n",info->seekable);
           printf("\n");
           printf("reading from file\n");
-          audio.read(2,256,buffers);
+          in_audio.read(2,AUDIO_SIZE,buffers);
           printf("read ok\n");
-          audio.close();
+          in_audio.close();
         }
         else printf("couldn't open audio input: %s\n",MArguments.input_audio);
 
+        printf("\n");
+        printf("saving audio file: %s\n",MArguments.output_audio);
+        printf("\n");
+
+        if (out_audio.open(MArguments.output_audio,AUDIO_FILE_WRITE,44100,2)) {
+          out_audio.write(2,AUDIO_SIZE,buffers);
+          printf("write ok\n");
+          out_audio.close();
+        }
       }
 
       //DEBUG: midi
