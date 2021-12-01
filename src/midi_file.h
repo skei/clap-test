@@ -90,6 +90,9 @@ struct MidiTrack {
   uint32_t    num_events  = 0;
   MidiEvents  events      = {};
 
+  uint32_t    next_event  = 0;
+  bool        active      = 0;
+
   //----------
 
   MidiTrack() {

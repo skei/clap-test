@@ -329,14 +329,14 @@ public:
 
         for (uint32_t min_=0; min_<5; min_++) {
           for (uint32_t sec_=0; sec_<60; sec_++) {
-            printf("sec %i\n",sec_);
+            printf("%i:%i\n",min_,sec_);
             for (uint32_t spl_=0; spl_<44100; spl_++) {
               player.process(44100);
             }
           }
         }
 
-        player.cleanup();
+        //player.cleanup();
 
         printf("finished playing midi file\n");
         midifile.unload();
