@@ -38,6 +38,7 @@
 			<Add library="m" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="../src/audio_file.h" />
 		<Unit filename="../src/clap/all.h" />
 		<Unit filename="../src/clap/audio-buffer.h" />
 		<Unit filename="../src/clap/chmap.h" />
@@ -93,11 +94,9 @@
 		<Unit filename="../src/instance.h" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/midi_file.h" />
-		<Unit filename="../src/midifile.h" />
 		<Unit filename="../src/process.h" />
 		<Unit filename="../src/system.h" />
 		<Unit filename="../src/utils.h" />
-		<Unit filename="../src/wavfile.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
