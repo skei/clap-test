@@ -12,6 +12,7 @@
 
 #include "audio_file.h"
 #include "midi_file.h"
+#include "midi_player.h"
 
 //#define PRINT printf
 //#define PRINT(...) {}
@@ -310,12 +311,40 @@ public:
       if (MArguments.input_midi) {
 
         MidiFile midifile;
+        MidiPlayer player;
         /*int result;
         result =*/ midifile.load(MArguments.input_midi);
         MidiSequence* seq = midifile.getMidiSequence();
         seq->calc_time();
-        midifile.print();
+
+        //midifile.print();
+
+        printf("\n");
+        printf("playing midi file\n");
+        printf("\n");
+
+        player.initialize(&midifile,44100,0);
+
+        //player.process(44100);
+
+        for (uint32_t min_=0; min_<5; min_++) {
+          for (uint32_t sec_=0; sec_<60; sec_++) {
+            printf("sec %i\n",sec_);
+            for (uint32_t spl_=0; spl_<44100; spl_++) {
+              player.process(44100);
+            }
+          }
+        }
+
+        player.cleanup();
+
+        printf("finished playing midi file\n");
+        midifile.unload();
+        printf("unloaded midi file\n");
+        printf("\n");
       }
+
+      //
 
       if (MEntry.load(MArguments.plugin_path)) {
 
@@ -345,7 +374,7 @@ public:
               if (instance->start_processing()) {
                 printf("# started processing...\n");
 
-                //process_audio(instance->getClapPlugin());
+                process_audio(instance->getClapPlugin());
 
                 instance->stop_processing();
                 printf("# stopped processing\n");

@@ -76,7 +76,7 @@ struct MidiEvent {
 
 //----------
 
-typedef std::vector<MidiEvent*> MidiEventArray;
+typedef std::vector<MidiEvent*> MidiEvents;
 
 //----------------------------------------------------------------------
 //
@@ -86,9 +86,9 @@ typedef std::vector<MidiEvent*> MidiEventArray;
 
 struct MidiTrack {
 
-  char*           name        = nullptr;
-  uint32_t        num_events  = 0;
-  MidiEventArray  events      = {};
+  char*       name        = nullptr;
+  uint32_t    num_events  = 0;
+  MidiEvents  events      = {};
 
   //----------
 
@@ -121,7 +121,7 @@ struct MidiTrack {
 
 //----------
 
-typedef std::vector<MidiTrack*> MidiTrackArray;
+typedef std::vector<MidiTrack*> MidiTracks;
 
 //----------------------------------------------------------------------
 //
@@ -131,15 +131,15 @@ typedef std::vector<MidiTrack*> MidiTrackArray;
 
 struct MidiSequence {
 
-  char*           name          = nullptr;
-  uint32_t        format        = 0;
-  uint32_t        num_tracks    = 0;
-  uint32_t        tpq           = 0;
-  MidiTrackArray  tracks        = {};
+  char*       name          = nullptr;
+  uint32_t    format        = 0;
+  uint32_t    num_tracks    = 0;
+  uint32_t    tpq           = 0;
+  MidiTracks  tracks        = {};
 
-  uint32_t        tempo         = 0.0;
-  uint32_t        timesig_num   = 0;
-  uint32_t        timesig_denom = 0;
+  uint32_t    tempo         = 0.0;
+  uint32_t    timesig_num   = 0;
+  uint32_t    timesig_denom = 0;
 
   //----------
 
@@ -205,16 +205,17 @@ class MidiFile {
 private:
 //------------------------------
 
-  uint32_t      MBufferSize      = 0;
   uint8_t*      MBuffer          = nullptr;
   uint8_t*      MBufferPtr       = nullptr;
+  uint32_t      MBufferSize      = 0;
+
+  MidiSequence* MSequence        = nullptr;
+
   uint8_t*      MTrackStartPtr   = nullptr;
   uint32_t      MRunningStatus   = 0;
   bool          MEndOfTrack      = false;
   uint32_t      MNumTrackEvents  = 0;
   MidiTrack*    MCurrentTrack    = nullptr;
-  MidiSequence* MSequence        = nullptr;
-
 //uint32_t      MSplitTracks     = 0;
 
 //------------------------------

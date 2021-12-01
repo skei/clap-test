@@ -2,4 +2,5 @@ plugin.clap
 midi_input.mid
 audio_input.wav
 audio_output.wav
+audio_output_debug.wav
 

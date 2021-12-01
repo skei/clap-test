@@ -88,12 +88,11 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-		<Unit filename="../src/extern/tinysmf.h" />
-		<Unit filename="../src/extern/vector_stdlib.h" />
 		<Unit filename="../src/host.h" />
 		<Unit filename="../src/instance.h" />
 		<Unit filename="../src/main.cpp" />
 		<Unit filename="../src/midi_file.h" />
+		<Unit filename="../src/midi_player.h" />
 		<Unit filename="../src/process.h" />
 		<Unit filename="../src/system.h" />
 		<Unit filename="../src/utils.h" />

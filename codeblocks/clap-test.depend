@@ -276,7 +276,7 @@
 
 1637621916 /home/skei/Desktop/u-he/clap-test/src/array.h
 
-1638301180 source:/DISKS/sda2/code/git/clap-test/src/main.cpp
+1638322557 source:/DISKS/sda2/code/git/clap-test/src/main.cpp
 	<assert.h>
 	<getopt.h>
 	<memory.h>
@@ -286,8 +286,9 @@
 	<string.h>
 	"entry.h"
 	"process.h"
+	"audio_file.h"
 	"midi_file.h"
-	"wavfile.h"
+	"midi_player.h"
 
 1638097354 /DISKS/sda2/code/git/clap-test/src/entry.h
 	"clap/all.h"
@@ -487,12 +488,18 @@
 1638102955 /DISKS/sda2/code/git/clap-test/src/instance.h
 	"clap/all.h"
 
-1638276385 /DISKS/sda2/code/git/clap-test/src/process.h
+1638322081 /DISKS/sda2/code/git/clap-test/src/process.h
 	"clap/all.h"
 
-1638302932 /DISKS/sda2/code/git/clap-test/src/midi_file.h
+1638318904 /DISKS/sda2/code/git/clap-test/src/midi_file.h
 	<vector>
 
 1637798011 /DISKS/sda2/code/git/clap-test/src/wavfile.h
 	<sndfile.h>
+
+1638314006 /DISKS/sda2/code/git/clap-test/src/audio_file.h
+	<sndfile.h>
+
+1638321940 /DISKS/sda2/code/git/clap-test/src/midi_player.h
+	"midi_file.h"
 
