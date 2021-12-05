@@ -249,13 +249,13 @@ public:
   //----------
 
   Instance* startPlugin(const char* path, uint32_t index,double samplerate) {
-    printf("> creating plugin '%s' (index %i)\n",path,index);
+    //printf("> creating plugin '%s' (index %i)\n",path,index);
     Instance* instance = MEntry.createInstance(path,index);
     if (!instance) {
-      printf("! couldn't create plugin\n");
+      //printf("! couldn't create plugin\n");
       return nullptr;
     }
-    printf("> plugin created\n");
+    //printf("> plugin created\n");
     bool result = instance->activate(samplerate);
     if (!result) {
       printf("! couldn't activate plugin\n");

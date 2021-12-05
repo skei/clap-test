@@ -90,11 +90,11 @@ public:
 
       case AUDIO_FILE_RDWR:
 
-        return false;;
+        return false;
 
     } // switch
 
-    return true;
+    return false;
   }
 
   //----------
