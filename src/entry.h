@@ -83,38 +83,37 @@ public:
   // create and initialize a plugin instance
 
   Instance* createInstance(const char* APath, uint32_t AIndex) {
-    printf("# creating plugin instance, index %i\n",AIndex);
-    if (AIndex < MClapEntry->get_plugin_count()) {
-      const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
-      if (descriptor) {
-        printf("  (host: %p, plugin_id: %s\n",MHost.getClapHost(),descriptor->id);
-        const clap_plugin* plugin = MClapEntry->create_plugin( MHost.getClapHost(), descriptor->id );
-        if (plugin) {
-          printf("# plugin created\n");
-          if (plugin->init(plugin)) {
-            printf("# plugin initialized\n");
-            Instance* instance = new Instance(plugin);
-            return instance;
-          }
-          else {
-            printf("! error: plugin initialization failed\n");
-            return NULL;
-          }
-        }
-        else {
-          printf("! error: plugin creation failed\n");
-          return NULL;
-        }
-      }
-      else {
-        printf("! error: couldn't get descriptor\n");
-        return NULL;
-      }
-    }
-    else {
-      printf("! error: index out of range\n");
+    printf("> creating plugin (index %i)\n",AIndex);
+
+    if (AIndex >= MClapEntry->get_plugin_count()) {
+      printf("  ! index out of bounds\n");
       return NULL;
     }
+
+    const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
+    if (!descriptor) {
+      printf("  ! error getting descriptor\n");
+      return NULL;
+    }
+    printf("  host: 0x%p\n",MHost.getClapHost());
+
+    printf("  > creating instance\n");
+    const clap_plugin* plugin = MClapEntry->create_plugin( MHost.getClapHost(), descriptor->id );
+    if (!plugin) {
+      printf("  ! error creating plugin instance\n");
+      return NULL;
+    }
+    printf("  > instance created\n");
+
+    bool result = plugin->init(plugin);
+    if (!result) {
+      printf("  ! error initializing instance\n");
+      return NULL;
+    }
+    printf("  ! instance initialized\n");
+
+    Instance* instance = new Instance(plugin);
+    return instance;
 
   }
 
@@ -123,9 +122,10 @@ public:
   // destroy instance
 
   void destroyInstance(Instance* AInstance) {
+    printf("> destroying plugin\n");
     const clap_plugin* plugin = AInstance->getClapPlugin();
     plugin->destroy(plugin);
-    printf("# plugin destroyed\n");
+    printf("> plugin destroyed\n");
   }
 
   //----------

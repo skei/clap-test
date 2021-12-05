@@ -253,7 +253,7 @@ public:
     Instance* instance = MEntry.createInstance(path,index);
     if (!instance) {
       //printf("! couldn't create plugin\n");
-      return nullptr;
+      return NULL;
     }
     //printf("> plugin created\n");
     bool result = instance->activate(samplerate);
@@ -262,7 +262,7 @@ public:
       //destroy
       MEntry.destroyInstance(instance);
       delete instance;
-      return nullptr;
+      return NULL;
     }
     printf("> plugin activated\n");
 
@@ -274,7 +274,7 @@ public:
       //destroy
       MEntry.destroyInstance(instance);
       delete instance;
-      return nullptr;
+      return NULL;
     }
     printf("> started processing\n");
     return instance;
@@ -304,17 +304,27 @@ public:
         }
         else {
           Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate);
-          instance->printInfo();
-          if (MArg.input_midi) {
-            MProcess.process_midi(instance,&MArg);
+          if (!instance) {
+            printf("!! error starting plugin!\n");
+            return -1;
           }
           else {
-            MProcess.process_audio(instance,&MArg);
+            instance->printInfo();
+            if (MArg.input_midi) {
+              MProcess.process_midi(instance,&MArg);
+            }
+            else {
+              MProcess.process_audio(instance,&MArg);
+            }
+            stopPlugin(instance);
           }
-          stopPlugin(instance);
         }
+        MEntry.unload();
       }
-      MEntry.unload();
+      else {
+        printf("!! couldn't load plugin\n");
+        return -1;
+      }
     }
     return 0;
   }
