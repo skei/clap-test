@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "arguments.h"
 #include "entry.h"
 #include "process.h"
 
@@ -25,21 +26,6 @@
 //
 //----------------------------------------------------------------------
 
-typedef struct arguments_t {
-  const char* plugin_path;
-  int         plugin_index;
-  const char* input_audio;
-  const char* output_audio;
-  const char* input_midi;
-  const char* output_midi;
-  float       sample_rate;
-  int         block_size;
-  int         channels;
-  float       decay_seconds;
-  int         do_list_plugins;
-  int         do_print_descriptor;
-  int         do_fuzz_blocksize;
-} arguments_t;
 
 //----------------------------------------------------------------------
 
@@ -57,7 +43,7 @@ typedef struct arguments_t {
   val     the value to return, or to load into the variable pointed to by flag
 */
 
-const struct option cmdline_args[] = {
+const struct option CMDLINE_ARGS[] = {
   {"help",              no_argument,       0, 'h'},
   {"plugin",            required_argument, 0, 'p'},
   {"index",             required_argument, 0, 'i'},
@@ -118,26 +104,27 @@ const char* USAGE_STRING =
 //
 //----------------------------------------------------------------------
 
-class CLAP_Test {
+class TestHost {
 
 //------------------------------
 private:
 //------------------------------
 
-  arguments_t MArguments;
+  arguments_t MArg;
   Host        MHost;
   Entry       MEntry;
+  Process     MProcess;
 
 //------------------------------
 public:
 //------------------------------
 
-  CLAP_Test() {
+  TestHost() {
   }
 
   //----------
 
-  ~CLAP_Test() {
+  ~TestHost() {
   }
 
 //------------------------------
@@ -152,7 +139,7 @@ public:
   //----------
 
   bool parseArguments(int argc, char** argv) {
-    memset(&MArguments,0,sizeof(arguments_t));
+    memset(&MArg,0,sizeof(arguments_t));
 
     char c;
     char* endptr;
@@ -163,7 +150,7 @@ public:
     }
 
     else {
-      while ((c = getopt_long(argc,argv,OPTION_STRING,cmdline_args,NULL)) > 0) {
+      while ((c = getopt_long(argc,argv,OPTION_STRING,CMDLINE_ARGS,NULL)) > 0) {
         switch (c) {
 
           case 'h':
@@ -171,11 +158,11 @@ public:
             break;
 
           case 'P':
-            MArguments.plugin_path = optarg;
+            MArg.plugin_path = optarg;
             break;
 
           case 'I':
-            MArguments.plugin_index = strtof(optarg, &endptr);
+            MArg.plugin_index = strtof(optarg, &endptr);
             if (endptr == optarg) {
               printf("invalid index: %s\n\n", optarg);
               return false;
@@ -183,7 +170,7 @@ public:
             break;
 
           case 'i':
-            MArguments.input_audio = optarg;
+            MArg.input_audio = optarg;
             if (endptr == optarg) {
               printf("invalid input wav: %s\n\n", optarg);
               return false;
@@ -191,7 +178,7 @@ public:
             break;
 
           case 'o':
-            MArguments.output_audio = optarg;
+            MArg.output_audio = optarg;
             if (endptr == optarg) {
               printf("invalid output wav: %s\n\n", optarg);
               return false;
@@ -199,7 +186,7 @@ public:
             break;
 
           case 'm':
-            MArguments.input_midi = optarg;
+            MArg.input_midi = optarg;
             if (endptr == optarg) {
               printf("invalid input midi: %s\n\n", optarg);
               return false;
@@ -207,7 +194,7 @@ public:
             break;
 
           case 's':
-            MArguments.sample_rate = strtof(optarg, &endptr);
+            MArg.sample_rate = strtof(optarg, &endptr);
             if (endptr == optarg) {
               printf("invalid sample rate: %s\n\n", optarg);
               return false;
@@ -215,23 +202,23 @@ public:
             break;
 
           case 'b':
-            MArguments.block_size = strtol(optarg, &endptr, 0);
-            if ((endptr == optarg) || (MArguments.block_size <= 0)) {
+            MArg.block_size = strtol(optarg, &endptr, 0);
+            if ((endptr == optarg) || (MArg.block_size <= 0)) {
               printf("invalid block size: %s\n\n", optarg);
               return false;
             }
             break;
 
           case 'c':
-            MArguments.channels = strtol(optarg, &endptr, 0);
-            if ((endptr == optarg) || (MArguments.channels <= 0)) {
+            MArg.channels = strtol(optarg, &endptr, 0);
+            if ((endptr == optarg) || (MArg.channels <= 0)) {
               printf("invalid channel count: %s\n\n", optarg);
               return 0;
             }
             break;
 
           case 'd':
-            MArguments.decay_seconds = strtof(optarg, &endptr);
+            MArg.decay_seconds = strtof(optarg, &endptr);
             if (endptr == optarg) {
               printf("invalid decay_seconds: %s\n\n", optarg);
               return 0;
@@ -239,15 +226,15 @@ public:
             break;
 
           case 'l':
-            MArguments.do_list_plugins = 1;
+            MArg.do_list_plugins = 1;
             break;
 
           case 'D':
-            MArguments.do_print_descriptor = 1;
+            MArg.do_print_descriptor = 1;
             break;
 
           case 'z':
-            MArguments.do_fuzz_blocksize = 1;
+            MArg.do_fuzz_blocksize = 1;
             break;
 
           //default:
@@ -261,141 +248,70 @@ public:
 
   //----------
 
+  Instance* startPlugin(const char* path, uint32_t index,double samplerate) {
+    printf("> creating plugin '%s' (index %i)\n",path,index);
+    Instance* instance = MEntry.createInstance(path,index);
+    if (!instance) {
+      printf("! couldn't create plugin\n");
+      return nullptr;
+    }
+    printf("> plugin created\n");
+    bool result = instance->activate(samplerate);
+    if (!result) {
+      printf("! couldn't activate plugin\n");
+      //destroy
+      MEntry.destroyInstance(instance);
+      delete instance;
+      return nullptr;
+    }
+    printf("> plugin activated\n");
+
+    result = instance->start_processing();
+    if (!result) {
+      printf("! couldn't start processing\n");
+      //deactivate
+      instance->deactivate();
+      //destroy
+      MEntry.destroyInstance(instance);
+      delete instance;
+      return nullptr;
+    }
+    printf("> started processing\n");
+    return instance;
+  }
+
+  //----------
+
+  void stopPlugin(Instance* instance) {
+    instance->stop_processing();
+    printf("+ stopped processing\n");
+    instance->deactivate();
+    printf("+ deactivated plugin\n");
+    MEntry.destroyInstance(instance);
+    delete instance;
+  }
+
+  //----------
+
   int main(int argc, char** argv) {
-
     if (parseArguments(argc,argv)) {
-
-      //DEBUG: audio
-
-      if (MArguments.input_audio) {
-
-        AudioFile in_audio;
-        AudioFile out_audio;
-        float buffer1[AUDIO_SIZE];
-        float buffer2[AUDIO_SIZE];
-        float* buffers[2] = { buffer1, buffer2 };
-
-        printf("\n");
-        printf("loading audio file: %s\n",MArguments.input_audio);
-        printf("\n");
-
-        if (in_audio.open(MArguments.input_audio)) {
-          SF_INFO* info = in_audio.getInfo();
-          printf("  MInfo.frames      %i\n",(int)info->frames);
-          printf("  MInfo.samplerate  %i\n",info->samplerate);
-          printf("  MInfo.channels    %i\n",info->channels);
-          printf("  MInfo.format      %i\n",info->format);
-          printf("  MInfo.sections    %i\n",info->sections);
-          printf("  MInfo.seekable    %i\n",info->seekable);
-          printf("\n");
-          printf("reading from file\n");
-          in_audio.read(2,AUDIO_SIZE,buffers);
-          printf("read ok\n");
-          in_audio.close();
-        }
-        else printf("couldn't open audio input: %s\n",MArguments.input_audio);
-
-        printf("\n");
-        printf("saving audio file: %s\n",MArguments.output_audio);
-        printf("\n");
-
-        if (out_audio.open(MArguments.output_audio,AUDIO_FILE_WRITE,44100,2)) {
-          out_audio.write(2,AUDIO_SIZE,buffers);
-          printf("write ok\n");
-          out_audio.close();
-        }
-      }
-
-      //DEBUG: midi
-
-      if (MArguments.input_midi) {
-
-        MidiFile midifile;
-        MidiPlayer player;
-        /*int result;
-        result =*/ midifile.load(MArguments.input_midi);
-        MidiSequence* seq = midifile.getMidiSequence();
-        seq->calc_time();
-
-        //midifile.print();
-
-        printf("\n");
-        printf("playing midi file\n");
-        printf("\n");
-
-        player.initialize(&midifile,44100,0);
-
-        //player.process(44100);
-
-        for (uint32_t min_=0; min_<5; min_++) {
-          for (uint32_t sec_=0; sec_<60; sec_++) {
-            printf("%i:%i\n",min_,sec_);
-            for (uint32_t spl_=0; spl_<44100; spl_++) {
-              player.process(44100);
-            }
-          }
-        }
-
-        //player.cleanup();
-
-        printf("finished playing midi file\n");
-        midifile.unload();
-        printf("unloaded midi file\n");
-        printf("\n");
-      }
-
-      //
-
-      if (MEntry.load(MArguments.plugin_path)) {
-
-        // list plugins
-
-        if (MArguments.do_list_plugins) {
+      if (MEntry.load(MArg.plugin_path)) {
+        if (MArg.do_list_plugins) {
           MEntry.listPlugins();
         }
-
-        // print descriptor
-
-        else if (MArguments.do_print_descriptor) {
-          MEntry.printDescriptor(MArguments.plugin_index);
+        else if (MArg.do_print_descriptor) {
+          MEntry.printDescriptor(MArg.plugin_index);
         }
-
         else {
-
-        // process
-
-        //----------
-
-          Instance* instance = MEntry.createInstance(MArguments.plugin_path,MArguments.plugin_index);
-          if (instance) {
-            instance->printInfo();
-            if (instance->activate(MArguments.sample_rate)) {
-              printf("# plugin activated\n");
-              if (instance->start_processing()) {
-                printf("# started processing...\n");
-
-                process_audio(instance->getClapPlugin());
-
-                instance->stop_processing();
-                printf("# stopped processing\n");
-              }
-              else {
-                printf("! error: couldn't start processing\n");
-                return false;
-              }
-              instance->deactivate();
-              printf("# deactivated\n");
-            }
-            else {
-              printf("! error: couldn't activate\n");
-              return false;
-            }
-            MEntry.destroyInstance(instance);
+          Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate);
+          instance->printInfo();
+          if (MArg.input_midi) {
+            MProcess.process_midi(instance,&MArg);
           }
-          delete instance;
-
-        //----------
-
+          else {
+            MProcess.process_audio(instance,&MArg);
+          }
+          stopPlugin(instance);
         }
       }
       MEntry.unload();
@@ -403,7 +319,7 @@ public:
     return 0;
   }
 
-  //----------
+ //----------
 
 };
 
@@ -414,6 +330,6 @@ public:
 //----------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-  CLAP_Test test;
-  return test.main(argc,argv);
+  TestHost testhost;
+  return testhost.main(argc,argv);
 }

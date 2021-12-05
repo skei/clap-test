@@ -38,6 +38,7 @@
 			<Add library="m" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="../src/arguments.h" />
 		<Unit filename="../src/audio_file.h" />
 		<Unit filename="../src/clap/all.h" />
 		<Unit filename="../src/clap/audio-buffer.h" />

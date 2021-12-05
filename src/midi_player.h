@@ -42,19 +42,23 @@ public:
     MSampleRate     = ASampleRate;
     MInvSampleRate  = 1.0 / MSampleRate;
     MCurrentTime    = AStartPos;
-
     for (uint32_t i=0; i<MSequence->num_tracks; i++) {
       MSequence->tracks[i]->active = true;
       MSequence->tracks[i]->next_event = 0;
     }
+  }
 
+  //----------
+
+  float getLength() {
+    return MSequence->length;
   }
 
   //----------
 
   // process 1 sample
 
-  void process(uint32_t ASampleRate) {
+  void process() {
     for (uint32_t t=0; t<MSequence->tracks.size(); t++) {
       if (MSequence) {
         MidiTrack* track = MSequence->tracks[t];

@@ -89,9 +89,9 @@ struct MidiTrack {
   char*       name        = nullptr;
   uint32_t    num_events  = 0;
   MidiEvents  events      = {};
-
   uint32_t    next_event  = 0;
   bool        active      = 0;
+  float       length      = 0.0;
 
   //----------
 
@@ -139,6 +139,7 @@ struct MidiSequence {
   uint32_t    num_tracks    = 0;
   uint32_t    tpq           = 0;
   MidiTracks  tracks        = {};
+  float       length        = 0.0;
 
   uint32_t    tempo         = 0.0;
   uint32_t    timesig_num   = 0;
@@ -179,8 +180,10 @@ struct MidiSequence {
     uint32_t  ticks_per_qnote = tpq; // <PPQ from the header>
     float     us_per_tick     = (float)us_per_qnote / (float)ticks_per_qnote;
     float     s_per_tick      = us_per_tick / 1000000.0;
+    length = 0.0;
     for (uint32_t t=0; t<num_tracks; t++) {
       MidiTrack* track = tracks[t];
+      track->length = 0.0;
       uint32_t num_events = track->num_events;
       uint32_t delta = 0;
       for (uint32_t e=0; e<num_events; e++) {
@@ -188,6 +191,8 @@ struct MidiSequence {
         delta += event->delta;
         float time = (float)delta * (float)s_per_tick;
         event->time = time;
+        if (time > track->length) track->length = time;
+        if (time > length) length = time;
       }
     }
   }

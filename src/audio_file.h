@@ -64,6 +64,7 @@ public:
     switch (MMode) {
 
       case AUDIO_FILE_READ:
+
         MHandle = sf_open(APath,SFM_READ,&MInfo);
         if (!MHandle) {
           printf("couldn't open \"%s\": %s\n", MPath, sf_strerror(MHandle));
@@ -72,6 +73,7 @@ public:
         return true;
 
       case AUDIO_FILE_WRITE:
+
         MInfo.frames     = 0;
         MInfo.samplerate = ASampleRate;
         MInfo.channels   = AChannels;
@@ -87,6 +89,7 @@ public:
         return true;
 
       case AUDIO_FILE_RDWR:
+
         return false;;
 
     } // switch
@@ -132,14 +135,20 @@ public:
     }
   }
 
+  //----------
+
+  void printInfo() {
+    printf("\n");
+    printf("  - MInfo.frames      %i\n",(int)MInfo.frames);
+    printf("  - MInfo.samplerate  %i\n",MInfo.samplerate);
+    printf("  - MInfo.channels    %i\n",MInfo.channels);
+    printf("  - MInfo.format      %i\n",MInfo.format);
+    printf("  - MInfo.sections    %i\n",MInfo.sections);
+    printf("  - MInfo.seekable    %i\n",MInfo.seekable);
+    printf("\n");
+  }
+
 };
-
-
-//----------
-
-
-//----------
-
 
 //----------------------------------------------------------------------
 #endif
