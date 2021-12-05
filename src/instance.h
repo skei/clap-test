@@ -116,6 +116,7 @@ public:
 
   void printPortInfo(clap_audio_port_info* info) {
     printf("    name          %s\n",info->name);
+    printf("    id            %i\n",info->id);
     printf("    channel count %i\n",info->channel_count);
     printf("    channel map   %i\n",info->channel_map);
     printf("    sample-size   %i\n",info->sample_size);
