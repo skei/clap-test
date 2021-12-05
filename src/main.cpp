@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "arguments.h"
 #include "entry.h"
@@ -310,12 +311,13 @@ public:
           }
           else {
             instance->printInfo();
-            if (MArg.input_midi) {
-              MProcess.process_midi(instance,&MArg);
-            }
-            else {
-              MProcess.process_audio(instance,&MArg);
-            }
+            //if (MArg.input_midi) {
+            //  MProcess.process_midi(instance,&MArg);
+            //}
+            //else {
+            //  MProcess.process_audio(instance,&MArg);
+            //}
+            MProcess.process(instance,&MArg);
             stopPlugin(instance);
           }
         }

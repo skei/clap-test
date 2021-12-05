@@ -7,14 +7,17 @@
 
 #include "midi_file.h"
 
+typedef void (*append_event_callback)(MidiEvent* event, void* ptr);
+
 //----------------------------------------------------------------------
 
 class MidiPlayer {
 
+private:
+
   MidiFile*     MMidiFile       = nullptr;
   MidiSequence* MSequence       = nullptr;
   uint32_t      MSamplePos      = 0;
-
   float         MSampleRate     = 44100.0;
   float         MInvSampleRate  = (1.0 / MSampleRate);
   float         MCurrentTime    = 0.0;
@@ -31,20 +34,23 @@ public:
   ~MidiPlayer() {
   }
 
+
 //------------------------------
 public:
 //------------------------------
 
-  void initialize(MidiFile* AMidiFile, float ASampleRate=44100.0, float AStartPos=0.0) {
+  MidiFile*     getMidiFile()     { return MMidiFile; }
+  MidiSequence* getMidiSequence() { return MSequence; }
 
+  void initialize(MidiFile* AMidiFile, float ASampleRate=44100.0, float AStartPos=0.0) {
     MMidiFile       = AMidiFile;
     MSequence       = AMidiFile->getMidiSequence();
     MSampleRate     = ASampleRate;
     MInvSampleRate  = 1.0 / MSampleRate;
     MCurrentTime    = AStartPos;
     for (uint32_t i=0; i<MSequence->num_tracks; i++) {
-      MSequence->tracks[i]->active = true;
-      MSequence->tracks[i]->next_event = 0;
+      //MSequence->tracks[i]->active = true;
+      //MSequence->tracks[i]->next_event = 0;
     }
   }
 
@@ -56,34 +62,36 @@ public:
 
   //----------
 
-  // process 1 sample
+  void setPos(float APos) {
+    MCurrentTime = APos;
+    //TODO: find next_event..
+  }
 
-  void process() {
-    for (uint32_t t=0; t<MSequence->tracks.size(); t++) {
-      if (MSequence) {
+  //----------
+
+  // return number of events
+
+  void GetEventsForBlock(float AFrom, float ALength, MidiEvents* blockevents) {
+    if (MSequence) {
+      for (uint32_t t=0; t<MSequence->tracks.size(); t++) {
         MidiTrack* track = MSequence->tracks[t];
         if (track) {
-          if (track->next_event < track->events.size()) {
-            while (track->events[track->next_event]->time <= MCurrentTime) {
-              MidiEvent* next_event = track->events[track->next_event];
-
-              //handlee next_event
-              printf("event.. track %i time %.2f : %02x %02x %02x\n",t,next_event->time,next_event->msg1,next_event->msg2,next_event->msg3);
-
-              track->next_event += 1;
-              if (track->next_event >= track->events.size()) {
-                MSequence->tracks[t] = nullptr;
-                break;
+          for (uint32_t e=0; e<track->events.size(); e++) {
+            MidiEvent* event = track->events[e];
+            if (event) {
+              if ((event->time >= AFrom) && (event->time < (AFrom + ALength))) {
+                if ((event->type == 0) && (event->msg1 < 0xF0)) {
+                  printf("  midiplayer.EVENT: %f : %02x %02x %02x\n",event->time,event->msg1,event->msg2,event->msg2);
+                  blockevents->push_back(event);
+                }
               }
             }
           }
         }
       }
     }
-    MCurrentTime += MInvSampleRate;
   }
 
-  //----------
 
 };
 

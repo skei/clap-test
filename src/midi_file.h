@@ -18,6 +18,7 @@ struct MidiEvent {
   uint8_t   msg3    = 0;
   uint32_t  delta   = 0;
   float     time    = 0.0;
+  uint32_t  offset  = 0;
   uint32_t  datalen = 0;
   uint8_t*  data    = nullptr;
 
@@ -89,8 +90,8 @@ struct MidiTrack {
   char*       name        = nullptr;
   uint32_t    num_events  = 0;
   MidiEvents  events      = {};
-  uint32_t    next_event  = 0;
-  bool        active      = 0;
+  //uint32_t    next_event  = 0;
+  //bool        active      = 0;
   float       length      = 0.0;
 
   //----------
@@ -267,6 +268,7 @@ public:
     fclose(fp);
     result = load(buffer,size);
     //free(buffer);
+    MSequence->calc_time();
     return result;
   }
 
