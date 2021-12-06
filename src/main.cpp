@@ -311,12 +311,6 @@ public:
           }
           else {
             instance->printInfo();
-            //if (MArg.input_midi) {
-            //  MProcess.process_midi(instance,&MArg);
-            //}
-            //else {
-            //  MProcess.process_audio(instance,&MArg);
-            //}
             MProcess.process(instance,&MArg);
             stopPlugin(instance);
           }
