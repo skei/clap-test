@@ -396,10 +396,15 @@ public:
       printf("> unloaded midi file\n");
     }
 
-    MAudioInputFile.close();
-    printf("> audio input file closed\n");
-    MAudioOutputFile.close();
-    printf("> audio output file closed\n");
+    if (arg->input_audio) {
+      MAudioInputFile.close();
+      printf("> audio input file closed\n");
+    }
+
+    if (arg->output_audio) {
+      MAudioOutputFile.close();
+      printf("> audio output file closed\n");
+    }
 
   }
 
