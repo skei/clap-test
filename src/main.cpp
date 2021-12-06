@@ -249,7 +249,7 @@ public:
 
   //----------
 
-  Instance* startPlugin(const char* path, uint32_t index,double samplerate) {
+  Instance* startPlugin(const char* path, uint32_t index,double samplerate, uint32_t blocksize) {
     //printf("> creating plugin '%s' (index %i)\n",path,index);
     Instance* instance = MEntry.createInstance(path,index);
     if (!instance) {
@@ -257,7 +257,7 @@ public:
       return NULL;
     }
     //printf("> plugin created\n");
-    bool result = instance->activate(samplerate);
+    bool result = instance->activate(samplerate,blocksize,blocksize);
     if (!result) {
       printf("! couldn't activate plugin\n");
       //destroy
@@ -304,7 +304,7 @@ public:
           MEntry.printDescriptor(MArg.plugin_index);
         }
         else {
-          Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate);
+          Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate,MArg.block_size);
           if (!instance) {
             printf("!! error starting plugin!\n");
             return -1;

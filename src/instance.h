@@ -85,9 +85,9 @@ public:
 
   //----------
 
-  bool activate(float ASampleRate) {
+  bool activate(float ASampleRate, uint32_t AMinFrames, uint32_t AMaxFrames) {
     // 0.14.0
-    return MClapPlugin->activate(MClapPlugin,ASampleRate);
+    return MClapPlugin->activate(MClapPlugin,ASampleRate,AMinFrames,AMaxFrames);
     // 0.15.0
     //return MClapPlugin->activate(MClapPlugin,ASampleRate,1,4096);
   }

@@ -22,11 +22,9 @@ typedef struct clap_version {
 }
 #endif
 
-static CLAP_CONSTEXPR const clap_version CLAP_VERSION = {0, 14, 0};
+static CLAP_CONSTEXPR const clap_version CLAP_VERSION = {0, 15, 0};
 
-//SKEI
-//static CLAP_CONSTEXPR inline bool clap_version_is_compatible(const clap_version v) {
-static CLAP_CONSTEXPR inline bool clap_version_is_compatible(const clap_version &v) {
+static CLAP_CONSTEXPR inline bool clap_version_is_compatible(const clap_version v) {
    // For version 0, we require the same minor version because
    // we may still break the ABI at this point
    if (v.major == 0 && CLAP_VERSION.major == 0)

@@ -82,15 +82,24 @@ public:
     uint8_t msg3    = midievent->msg3;
     int32_t offset  = floorf(time * MSampleRate);
     printf("  process.h / getInputEvent: offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+
     clap_event* event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
-    MClapInputEvents.push_back(event);
     memset(event,0,sizeof(clap_event));
+
     event->type = CLAP_EVENT_MIDI;
     event->time = offset;
-    event->midi.data[0] = 1;//msg1; ..... these doesn't survive
-    event->midi.data[1] = 2;//msg2;       (0 in plugin)..
-    event->midi.data[2] = 3;//msg3;
+    event->midi.data[0] = msg1;
+    event->midi.data[1] = msg2;
+    event->midi.data[2] = msg3;
+
+//      event->type = CLAP_EVENT_NOTE_ON;
+//      event->note.key = 1;
+//      event->note.channel = 2;
+//      event->note.velocity = 0.5;
+
+    MClapInputEvents.push_back(event);
     return event;
+
   }
 
   //----------
@@ -122,7 +131,7 @@ public: // callbacks
 //------------------------------
 
   static
-  uint32_t process_input_events_size(const struct clap_event_list *list) {
+  uint32_t process_input_events_size(const struct clap_event_list* list) {
     Process* process = (Process*)list->ctx;
     if (process) return process->input_events_size();
     return 0;
@@ -131,7 +140,7 @@ public: // callbacks
   //----------
 
   static
-  const clap_event* process_input_events_get(const struct clap_event_list *list, uint32_t index) {
+  const clap_event* process_input_events_get(const struct clap_event_list* list, uint32_t index) {
     Process* process = (Process*)list->ctx;
     if (process) return process->input_events_get(index);
     return NULL;
@@ -140,7 +149,7 @@ public: // callbacks
   //----------
 
   static
-  void process_input_events_push_back(const struct clap_event_list *list, const clap_event *event) {
+  void process_input_events_push_back(const struct clap_event_list* list, const clap_event *event) {
     Process* process = (Process*)list->ctx;
     if (process) process->input_events_push_back(event);
   }
@@ -148,7 +157,7 @@ public: // callbacks
   //----------
 
   static
-  uint32_t process_output_events_size(const struct clap_event_list *list) {
+  uint32_t process_output_events_size(const struct clap_event_list* list) {
     Process* process = (Process*)list->ctx;
     if (process) return process->output_events_size();
     return 0;
@@ -157,7 +166,7 @@ public: // callbacks
   //----------
 
   static
-  const clap_event* process_output_events_get(const struct clap_event_list *list, uint32_t index) {
+  const clap_event* process_output_events_get(const struct clap_event_list* list, uint32_t index) {
     Process* process = (Process*)list->ctx;
     if (process) return process->output_events_get(index);
     return NULL;
@@ -166,7 +175,7 @@ public: // callbacks
   //----------
 
   static
-  void process_output_events_push_back(const struct clap_event_list *list, const clap_event *event) {
+  void process_output_events_push_back(const struct clap_event_list* list, const clap_event *event) {
     Process* process = (Process*)list->ctx;
     if (process) process->output_events_push_back(event);
   }
@@ -235,15 +244,15 @@ public:
 private:
 //------------------------------
 
+  //const clap_event* getInputEvent(uint32_t AIndex) {
+  //  return NULL;
+  //}
+
+  //----------
+
   /*
     start with 0 events for current blocks
   */
-
-  const clap_event* getInputEvent(uint32_t AIndex) {
-    return NULL;
-  }
-
-  //----------
 
   void clearInputEvents() {
     MMidiInputEvents.clear();
@@ -320,15 +329,17 @@ public:
 
     //-----
 
+    printf("* length: %f seconds\n",num_samples / arg->sample_rate);
+
     if (num_samples == 0) {
       printf("!! num_samples == 0\n");
       //return;
     }
 
-    if (num_samples >= (arg->sample_rate * 60.0)) {
-      printf("! 1 minute.. truncation\n" );
-      num_samples = 60.0 * arg->sample_rate;
-    }
+    //if (num_samples >= (arg->sample_rate * 60.0)) {
+    //  printf("! 1 minute.. truncation\n" );
+    //  num_samples = 60.0 * arg->sample_rate;
+    //}
 
     uint32_t num_blocks = num_samples / arg->block_size;
     num_blocks += 1; // just to be sure :-)
