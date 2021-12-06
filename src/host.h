@@ -2,14 +2,12 @@
 #define host_included
 //----------------------------------------------------------------------
 
-/*
-  clap_host
-  HostedPluginHost
-*/
-
 #include "clap/all.h"
 
-//----------------------------------------------------------------------
+#define HOST_NAME     "clap-test"
+#define HOST_AUTHOR   "Tor-Helge Skei"
+#define HOST_URL      "https://torhelgeskei.com"
+#define HOST_VERSION  "0.0.1"
 
 //----------------------------------------------------------------------
 //
@@ -18,23 +16,6 @@
 //----------------------------------------------------------------------
 
 class Host {
-
-//------------------------------
-private:
-//------------------------------
-
-  struct clap_host MClapHost = {
-    CLAP_VERSION,
-    this,
-    "clap-test",
-    "Tor-Helge Skei",
-    "https://torhelgeskei.com",
-    "0.0.1",
-    get_extension_callback,
-    request_restart_callback,
-    request_process_callback,
-    request_callback_callback
-  };
 
 //------------------------------
 public:
@@ -69,7 +50,7 @@ private: // extensions
   //--------------------
 
   const void* get_extension(const char *extension_id) {
-    printf("> get_extension(%s)\n",extension_id);
+    printf("from plugin > get_extension(%s)\n",extension_id);
     if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)     { return &MClapHostAudioPorts; }
     if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)    { return &MClapHostEventFilter; }
     if (strcmp(extension_id,CLAP_EXT_FD_SUPPORT) == 0)      { return &MClapHostFdSupport; }
@@ -91,19 +72,19 @@ private: // extensions
   //----------
 
   void request_restart() {
-    printf("> request_restart()\n");
+    printf("from plugin > request_restart()\n");
   }
 
   //----------
 
   void request_process() {
-    printf("> request_process()\n");
+    printf("from plugin > request_process()\n");
   }
 
   //----------
 
   void request_callback() {
-    printf("> request_callback()\n");
+    printf("from plugin > request_callback()\n");
   }
 
   //--------------------
@@ -111,12 +92,12 @@ private: // extensions
   //--------------------
 
   uint32_t audio_ports_get_preferred_sample_size() {
-    printf("> audio-ports.getPreferredSampleSize() -> 32\n");
+    printf("from plugin > audio-ports.get_preferred_sample_size() -> 32\n");
     return 32;
   }
 
   void audio_ports_rescan(uint32_t flags) {
-    printf("> audio-ports.rescan(%i)\n",flags);
+    printf("from plugin > audio-ports.rescan(%i)\n",flags);
   }
 
   //--------------------
@@ -124,7 +105,7 @@ private: // extensions
   //--------------------
 
   void event_filter_changed() {
-    printf("> event-filter.changed()\n");
+    printf("from plugin > event-filter.changed()\n");
   }
 
   //--------------------
@@ -132,17 +113,17 @@ private: // extensions
   //--------------------
 
   bool fd_support_register_fd(clap_fd fd, clap_fd_flags flags) {
-    printf("> fd-support.registerFd(%i)\n",flags);
+    printf("from plugin > fd-support.register_fd(%i)\n",flags);
     return false;
   }
 
   bool fd_support_modify_fd(clap_fd fd, clap_fd_flags flags) {
-    printf("> fd-support.modify(%i)\n",flags);
+    printf("from plugin > fd-support.modify(%i)\n",flags);
     return false;
   }
 
   bool fd_support_unregister_fd(clap_fd fd) {
-    printf("> fd-support.unregisterFd()\n");
+    printf("from plugin > fd-support.unregister_fd()\n");
     return false;
   }
 
@@ -151,11 +132,11 @@ private: // extensions
   //--------------------
 
   void file_reference_changed() {
-    printf("> file-reference.changed()\n");
+    printf("from plugin > file-reference.changed()\n");
   }
 
   void file_reference_set_dirty(clap_id resource_id) {
-    printf("> file-reference.setDirty(%i)\n",resource_id);
+    printf("from plugin > file-reference.set_dirty(%i)\n",resource_id);
   }
 
   //--------------------
@@ -163,7 +144,7 @@ private: // extensions
   //--------------------
 
   bool gui_resize(uint32_t width, uint32_t height) {
-    printf("> gui.resize(%i,%i)\n",width,height);
+    printf("from plugin > gui.resize(%i,%i)\n",width,height);
     return false;
   }
 
@@ -172,7 +153,7 @@ private: // extensions
   //--------------------
 
   void latency_changed() {
-    printf("> latency.changed()\n");
+    printf("from plugin > latency.changed()\n");
   }
 
   //--------------------
@@ -180,7 +161,7 @@ private: // extensions
   //--------------------
 
   void log_log(clap_log_severity severity, const char *msg) {
-    printf("> log.log(%i,%s)\n",severity,msg);
+    printf("from plugin > log.log(%i,%s)\n",severity,msg);
   }
 
   //--------------------
@@ -188,7 +169,7 @@ private: // extensions
   //--------------------
 
   void note_name_changed() {
-    printf("> note-name.changed()\n");
+    printf("from plugin > note-name.changed()\n");
   }
 
   //--------------------
@@ -196,15 +177,15 @@ private: // extensions
   //--------------------
 
   void params_rescan(clap_param_rescan_flags flags) {
-    printf("> params.rescan(%i)\n",flags);
+    printf("from plugin > params.rescan(%i)\n",flags);
   }
 
   void params_clear(clap_id param_id, clap_param_clear_flags flags) {
-    printf("> params.clear(%i,%i)\n",param_id,flags);
+    printf("from plugin > params.clear(%i,%i)\n",param_id,flags);
   }
 
   void params_request_flush() {
-    printf("> params.requestFlush()\n");
+    printf("from plugin > params.request_flush()\n");
   }
 
   //--------------------
@@ -212,7 +193,7 @@ private: // extensions
   //--------------------
 
   void quick_controls_changed(clap_quick_controls_changed_flags flags) {
-    printf("> quick-controls.changed(%i)\n",flags);
+    printf("from plugin > quick-controls.changed(%i)\n",flags);
   }
 
   //--------------------
@@ -220,7 +201,7 @@ private: // extensions
   //--------------------
 
   void state_mark_dirty() {
-    printf("> state.markDirty()\n");
+    printf("from plugin > state.markDirty()\n");
   }
 
   //--------------------
@@ -242,7 +223,7 @@ private: // extensions
   //--------------------
 
   bool thread_pool_request_exec(uint32_t num_tasks) {
-    printf("> thread-pool.requestExec(%i)\n",num_tasks);
+    printf("from plugin > thread-pool.request_exec(%i)\n",num_tasks);
     return false;
   }
 
@@ -251,12 +232,12 @@ private: // extensions
   //--------------------
 
   bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
-    printf("> timer-support.registerTimer(%i)\n",period_ms);
+    printf("from plugin > timer-support.register_timer(%i)\n",period_ms);
     return false;
   }
 
   bool timer_support_unregister_timer(clap_id timer_id) {
-    printf("> timer-support.unregisterTimer(%i)\n",timer_id);
+    printf("from plugin > timer-support.unregister_timer(%i)\n",timer_id);
     return false;
   }
 
@@ -265,22 +246,13 @@ private: // extensions
   //--------------------
 
   bool track_info_get(clap_track_info *info) {
-    printf("> track-info.get()\n");
+    printf("from plugin > track-info.get()\n");
     return false;
   }
 
 //------------------------------------------------------------
-private: // callbacks
+private: // clap host
 //------------------------------------------------------------
-
-/*
-  callbacks
-  trampoline into the Host class..
-*/
-
-//------------------------------------------------------------
-
-  // clap_host
 
   static const void* get_extension_callback(const struct clap_host* host, const char* extension_id) {
     Host* testhost = (Host*)host->host_data;
@@ -302,6 +274,25 @@ private: // callbacks
     testhost->request_callback();
   }
 
+  //----------
+
+  struct clap_host MClapHost = {
+    CLAP_VERSION,
+    this,
+    HOST_NAME,      // "clap-test",
+    HOST_AUTHOR,    // "Tor-Helge Skei",
+    HOST_URL,       // "https://torhelgeskei.com",
+    HOST_VERSION,   //" 0.0.1",
+    get_extension_callback,
+    request_restart_callback,
+    request_process_callback,
+    request_callback_callback
+  };
+
+//------------------------------------------------------------
+private: // extensions
+//------------------------------------------------------------
+
   // clap.audio-ports
 
   static uint32_t audio_ports_get_preferred_sample_size_callback(const clap_host* host) {
@@ -314,12 +305,21 @@ private: // callbacks
     testhost->audio_ports_rescan(flags);
   }
 
+  struct clap_host_audio_ports MClapHostAudioPorts = {
+    audio_ports_get_preferred_sample_size_callback,
+    audio_ports_rescan_callback
+  };
+
   // clap.event_filter
 
   static void event_filter_changed_callback(const clap_host* host) {
     Host* testhost = (Host*)host->host_data;
     testhost->event_filter_changed();
   }
+
+  struct clap_host_event_filter MClapHostEventFilter = {
+    event_filter_changed_callback
+  };
 
   // clap.fd-support
 
@@ -338,6 +338,12 @@ private: // callbacks
     return testhost->fd_support_unregister_fd(fd);
   }
 
+  struct clap_host_fd_support MClapHostFdSupport = {
+    fd_support_register_fd_callback,
+    fd_support_modify_fd_callback,
+    fd_support_unregister_fd_callback
+  };
+
   // clap.file-reference.draft/0
 
   static void file_reference_changed_callback(const clap_host* host) {
@@ -350,12 +356,21 @@ private: // callbacks
     testhost->file_reference_set_dirty(resource_id);
   }
 
+  struct clap_host_file_reference MClapHostFileReference = {
+    file_reference_changed_callback,
+    file_reference_set_dirty_callback
+  };
+
   // clap.gui
 
   static bool gui_resize_callback(const clap_host* host, uint32_t width, uint32_t height) {
     Host* testhost = (Host*)host->host_data;
     return testhost->gui_resize(width,height);
   }
+
+  struct clap_host_gui MClapHostGui = {
+    gui_resize_callback
+  };
 
   // clap.latency
 
@@ -364,6 +379,10 @@ private: // callbacks
     testhost->latency_changed();
   }
 
+  struct clap_host_latency MClapHostLatency = {
+    latency_changed_callback
+  };
+
   // clap.log
 
   static void log_log_callback(const clap_host* host, clap_log_severity severity, const char *msg) {
@@ -371,12 +390,20 @@ private: // callbacks
     testhost->log_log(severity,msg);
   }
 
+  struct clap_host_log MClapHostLog = {
+    log_log_callback
+  };
+
   // clap.note-name
 
   static void note_name_changed_callback(const clap_host* host) {
     Host* testhost = (Host*)host->host_data;
     testhost->note_name_changed();
   }
+
+  struct clap_host_note_name MClapHostNoteName = {
+    note_name_changed_callback
+  };
 
   // clap.params
 
@@ -395,6 +422,12 @@ private: // callbacks
     testhost->params_request_flush();
   }
 
+  struct clap_host_params MClapHostParams = {
+    params_rescan_callback,
+    params_clear_callback,
+    params_request_flush_callback
+  };
+
   // clap.quick-controls.draft/0
 
   static void quick_controls_changed_callback(const clap_host* host, clap_quick_controls_changed_flags flags) {
@@ -402,12 +435,20 @@ private: // callbacks
     testhost->quick_controls_changed(flags);
   }
 
+  struct clap_host_quick_controls MClapHostQuickControls = {
+    quick_controls_changed_callback
+  };
+
   // clap.state
 
   static void state_mark_dirty_callback(const clap_host* host) {
     Host* testhost = (Host*)host->host_data;
     testhost->state_mark_dirty();
   }
+
+  struct clap_host_state MClapHostState = {
+    state_mark_dirty_callback
+  };
 
   // clap.thread-check
 
@@ -421,12 +462,21 @@ private: // callbacks
     return testhost->thread_check_is_audio_thread();
   }
 
+  struct clap_host_thread_check MClapHostThreadCheck = {
+    thread_check_is_main_thread_callback,
+    thread_check_is_audio_thread_callback
+  };
+
   // clap.thread-pool.draft/0
 
   static bool thread_pool_request_exec_callback(const clap_host* host, uint32_t num_tasks) {
     Host* testhost = (Host*)host->host_data;
     return testhost->thread_pool_request_exec(num_tasks);
   }
+
+  struct clap_host_thread_pool MClapHostThreadPool = {
+    thread_pool_request_exec_callback
+  };
 
   // clap.timer-support
 
@@ -440,6 +490,11 @@ private: // callbacks
     return testhost->timer_support_unregister_timer(timer_id);
   }
 
+  struct clap_host_timer_support MClapHostTimerSupport = {
+    timer_support_register_timer_callback,
+    timer_support_unregister_timer_callback
+  };
+
   // clap.track-info.draft/0
 
   static bool track_info_get_callback(const clap_host* host, clap_track_info* info) {
@@ -447,82 +502,9 @@ private: // callbacks
     return testhost->track_info_get(info);
   }
 
-//------------------------------
-private:
-//------------------------------
-
-  // If the plugin does not implement this extension, it will have a stereo
-  // input and output.
-
-  struct clap_host_audio_ports MClapHostAudioPorts = {
-    audio_ports_get_preferred_sample_size_callback,
-    audio_ports_rescan_callback
-  };
-
-  struct clap_host_event_filter MClapHostEventFilter = {
-    event_filter_changed_callback
-  };
-
-  struct clap_host_fd_support MClapHostFdSupport = {
-    fd_support_register_fd_callback,
-    fd_support_modify_fd_callback,
-    fd_support_unregister_fd_callback
-  };
-
-  struct clap_host_file_reference MClapHostFileReference = {
-    file_reference_changed_callback,
-    file_reference_set_dirty_callback
-  };
-
-  struct clap_host_gui MClapHostGui = {
-    gui_resize_callback
-  };
-
-  struct clap_host_latency MClapHostLatency = {
-    latency_changed_callback
-  };
-
-  struct clap_host_log MClapHostLog = {
-    log_log_callback
-  };
-
-  struct clap_host_note_name MClapHostNoteName = {
-    note_name_changed_callback
-  };
-
-  struct clap_host_params MClapHostParams = {
-    params_rescan_callback,
-    params_clear_callback,
-    params_request_flush_callback
-  };
-
-  struct clap_host_quick_controls MClapHostQuickControls = {
-    quick_controls_changed_callback
-  };
-
-  struct clap_host_state MClapHostState = {
-    state_mark_dirty_callback
-  };
-
-  struct clap_host_thread_check MClapHostThreadCheck = {
-    thread_check_is_main_thread_callback,
-    thread_check_is_audio_thread_callback
-  };
-
-  struct clap_host_timer_support MClapHostTimerSupport = {
-    timer_support_register_timer_callback,
-    timer_support_unregister_timer_callback
-  };
-
-  struct clap_host_thread_pool MClapHostThreadPool = {
-    thread_pool_request_exec_callback
-  };
-
   struct clap_host_track_info MClapHostTrackInfo = {
     track_info_get_callback
   };
-
-  //----------
 
 };
 

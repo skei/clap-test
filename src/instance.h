@@ -25,6 +25,7 @@ private:
 //------------------------------
 
   const clap_plugin*                    MClapPlugin;
+
   const clap_plugin_audio_ports_config* MClapExtAudioPortsConfig;
   const clap_plugin_audio_ports*        MClapExtAudioPorts;
   const clap_plugin_event_filter*       MClapExtEventFilter;
@@ -66,6 +67,7 @@ public:
 //------------------------------
 
   // ask plugin (instance) about extensions..
+  // TODO: check more extensions
 
   void init_instance(const clap_plugin* plugin) {
     MClapExtAudioPortsConfig = (const clap_plugin_audio_ports_config*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS_CONFIG);
@@ -128,6 +130,7 @@ public:
   //----------
 
   // print some info
+  // TODO
 
   void printInfo() {
     int i,num;

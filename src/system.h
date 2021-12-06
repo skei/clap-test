@@ -13,6 +13,14 @@
 
 #include <dlfcn.h>
 
+/*
+  windows:
+    #include <windows.h>
+    LoadLibrary
+    GetProcAddress
+    CloseLibrary?
+*/
+
 //----------
 
 void* open_library(const char* filename) {
