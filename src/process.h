@@ -289,8 +289,6 @@ public:
 
     if (arg->input_midi) {
       /*int result =*/ MMidiFile.load(arg->input_midi);
-      //MidiSequence* seq = MMidiFile.getMidiSequence();
-      //seq->calc_time();
       MMidiPlayer.initialize(&MMidiFile,arg->sample_rate);
       MMidiSequence = MMidiPlayer.getMidiSequence();
       float midi_length = MMidiSequence->length;
@@ -336,10 +334,10 @@ public:
       //return;
     }
 
-    //if (num_samples >= (arg->sample_rate * 60.0)) {
-    //  printf("! 1 minute.. truncation\n" );
-    //  num_samples = 60.0 * arg->sample_rate;
-    //}
+    if (num_samples >= (arg->sample_rate * 300.0)) {
+      printf("! truncating to 5 minutes\n" );
+      num_samples = 300.0 * arg->sample_rate;
+    }
 
     uint32_t num_blocks = num_samples / arg->block_size;
     num_blocks += 1; // just to be sure :-)

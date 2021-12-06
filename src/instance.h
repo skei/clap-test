@@ -25,19 +25,19 @@ private:
 //------------------------------
 
   const clap_plugin*                    MClapPlugin;
-  const clap_plugin_audio_ports_config* MClapAudioPortsConfig;
-  const clap_plugin_audio_ports*        MClapAudioPorts;
-  const clap_plugin_event_filter*       MClapEventFilter;
-  const clap_plugin_fd_support*         MClapFdSupport;
-  const clap_plugin_gui*                MClapGui;
-  const clap_plugin_gui_x11*            MClapGuiX11;
-  const clap_plugin_latency*            MClapLatency;
-  const clap_plugin_note_name*          MClapNoteName;
-  const clap_plugin_params*             MClapParams;
-  const clap_plugin_render*             MClapRender;
-  const clap_plugin_state*              MClapState;
-  const clap_plugin_vst2_convert*       MClapVst2Convert;
-  const clap_plugin_vst3_convert*       MClapVst3Convert;
+  const clap_plugin_audio_ports_config* MClapExtAudioPortsConfig;
+  const clap_plugin_audio_ports*        MClapExtAudioPorts;
+  const clap_plugin_event_filter*       MClapExtEventFilter;
+  const clap_plugin_fd_support*         MClapExtFdSupport;
+  const clap_plugin_gui*                MClapExtGui;
+  const clap_plugin_gui_x11*            MClapExtGuiX11;
+  const clap_plugin_latency*            MClapExtLatency;
+  const clap_plugin_note_name*          MClapExtNoteName;
+  const clap_plugin_params*             MClapExtParams;
+  const clap_plugin_render*             MClapExtRender;
+  const clap_plugin_state*              MClapExtState;
+  const clap_plugin_vst2_convert*       MClapExtVst2Convert;
+  const clap_plugin_vst3_convert*       MClapExtVst3Convert;
 
 //------------------------------
 public:
@@ -68,19 +68,19 @@ public:
   // ask plugin (instance) about extensions..
 
   void init_instance(const clap_plugin* plugin) {
-    MClapAudioPortsConfig = (const clap_plugin_audio_ports_config*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS_CONFIG);
-    MClapAudioPorts       = (const clap_plugin_audio_ports*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS);
-    MClapEventFilter      = (const clap_plugin_event_filter*)plugin->get_extension(plugin,CLAP_EXT_EVENT_FILTER);
-    MClapFdSupport        = (const clap_plugin_fd_support*)plugin->get_extension(plugin,CLAP_EXT_FD_SUPPORT);
-    MClapGui              = (const clap_plugin_gui*)plugin->get_extension(plugin,CLAP_EXT_GUI);
-    MClapGuiX11           = (const clap_plugin_gui_x11*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
-    MClapLatency          = (const clap_plugin_latency*)plugin->get_extension(plugin,CLAP_EXT_LATENCY);
-    MClapNoteName         = (const clap_plugin_note_name*)plugin->get_extension(plugin,CLAP_EXT_NOTE_NAME);
-    MClapParams           = (const clap_plugin_params*)plugin->get_extension(plugin,CLAP_EXT_PARAMS);
-    MClapRender           = (const clap_plugin_render*)plugin->get_extension(plugin,CLAP_EXT_RENDER);
-    MClapState            = (const clap_plugin_state*)plugin->get_extension(plugin,CLAP_EXT_STATE);
-    MClapVst2Convert      = (const clap_plugin_vst2_convert*)plugin->get_extension(plugin,CLAP_EXT_VST2_CONVERT);
-    MClapVst3Convert      = (const clap_plugin_vst3_convert*)plugin->get_extension(plugin,CLAP_EXT_VST3_CONVERT);
+    MClapExtAudioPortsConfig = (const clap_plugin_audio_ports_config*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS_CONFIG);
+    MClapExtAudioPorts       = (const clap_plugin_audio_ports*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS);
+    MClapExtEventFilter      = (const clap_plugin_event_filter*)plugin->get_extension(plugin,CLAP_EXT_EVENT_FILTER);
+    MClapExtFdSupport        = (const clap_plugin_fd_support*)plugin->get_extension(plugin,CLAP_EXT_FD_SUPPORT);
+    MClapExtGui              = (const clap_plugin_gui*)plugin->get_extension(plugin,CLAP_EXT_GUI);
+    MClapExtGuiX11           = (const clap_plugin_gui_x11*)plugin->get_extension(plugin,CLAP_EXT_GUI_X11);
+    MClapExtLatency          = (const clap_plugin_latency*)plugin->get_extension(plugin,CLAP_EXT_LATENCY);
+    MClapExtNoteName         = (const clap_plugin_note_name*)plugin->get_extension(plugin,CLAP_EXT_NOTE_NAME);
+    MClapExtParams           = (const clap_plugin_params*)plugin->get_extension(plugin,CLAP_EXT_PARAMS);
+    MClapExtRender           = (const clap_plugin_render*)plugin->get_extension(plugin,CLAP_EXT_RENDER);
+    MClapExtState            = (const clap_plugin_state*)plugin->get_extension(plugin,CLAP_EXT_STATE);
+    MClapExtVst2Convert      = (const clap_plugin_vst2_convert*)plugin->get_extension(plugin,CLAP_EXT_VST2_CONVERT);
+    MClapExtVst3Convert      = (const clap_plugin_vst3_convert*)plugin->get_extension(plugin,CLAP_EXT_VST3_CONVERT);
   }
 
   //----------
@@ -133,25 +133,25 @@ public:
     int i,num;
     clap_audio_port_info info;
 
-    printf("# audio-ports (%s)\n", (MClapAudioPorts) ? "yes" : "no"  );
-    if (MClapAudioPorts) {
-      num = MClapAudioPorts->count(MClapPlugin,true);
+    printf("# audio-ports (%s)\n", (MClapExtAudioPorts) ? "yes" : "no"  );
+    if (MClapExtAudioPorts) {
+      num = MClapExtAudioPorts->count(MClapPlugin,true);
       printf("  %i audio input ports\n",num);
       for (i=0; i<num; i++) {
-        MClapAudioPorts->get(MClapPlugin,i,true,&info);
+        MClapExtAudioPorts->get(MClapPlugin,i,true,&info);
         printPortInfo(&info);
       }
-      num = MClapAudioPorts->count(MClapPlugin,false);
+      num = MClapExtAudioPorts->count(MClapPlugin,false);
       printf("  %i audio output ports\n",num);
       for (i=0; i<num; i++) {
-        MClapAudioPorts->get(MClapPlugin,i,false,&info);
+        MClapExtAudioPorts->get(MClapPlugin,i,false,&info);
         printPortInfo(&info);
       }
     }
 
-    printf("# params (%s)\n", (MClapParams) ? "yes" : "no"  );
-    if (MClapParams) {
-      num = MClapParams->count(MClapPlugin);
+    printf("# params (%s)\n", (MClapExtParams) ? "yes" : "no"  );
+    if (MClapExtParams) {
+      num = MClapExtParams->count(MClapPlugin);
       printf("  %i params\n",num);
     }
   }
