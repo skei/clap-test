@@ -46,7 +46,7 @@ public:
 
   Instance(const clap_plugin* AClapPlugin) {
     MClapPlugin = AClapPlugin;
-    init_instance(AClapPlugin);
+    init_extensions(AClapPlugin);
   }
 
   //----------
@@ -69,7 +69,7 @@ public:
   // ask plugin (instance) about extensions..
   // TODO: check more extensions
 
-  void init_instance(const clap_plugin* plugin) {
+  void init_extensions(const clap_plugin* plugin) {
     MClapExtAudioPortsConfig = (const clap_plugin_audio_ports_config*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS_CONFIG);
     MClapExtAudioPorts       = (const clap_plugin_audio_ports*)plugin->get_extension(plugin,CLAP_EXT_AUDIO_PORTS);
     MClapExtEventFilter      = (const clap_plugin_event_filter*)plugin->get_extension(plugin,CLAP_EXT_EVENT_FILTER);
