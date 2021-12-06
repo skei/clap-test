@@ -42,6 +42,8 @@ public:
   MidiFile*     getMidiFile()     { return MMidiFile; }
   MidiSequence* getMidiSequence() { return MSequence; }
 
+  //----------
+
   void initialize(MidiFile* AMidiFile, float ASampleRate=44100.0, float AStartPos=0.0) {
     MMidiFile       = AMidiFile;
     MSequence       = AMidiFile->getMidiSequence();
@@ -69,7 +71,10 @@ public:
 
   //----------
 
-  // return number of events
+  /*
+    appends within AFrom..(AFrom + ALength) are appended to blockevents
+    (no malloc/copy)
+  */
 
   void GetEventsForBlock(float AFrom, float ALength, MidiEvents* blockevents) {
     if (MSequence) {
