@@ -365,7 +365,8 @@ public:
         clearInputEvents();
         MMidiPlayer.GetEventsForBlock(MCurrentTime,seconds_per_block,&MMidiInputEvents);
       }
-      else {
+      //else {
+      if (arg->input_audio) {
         MAudioInputFile.read(arg->channels,arg->block_size,MAudioInputBuffers);
       }
 
