@@ -91,7 +91,7 @@ public:
     uint8_t msg1 = MMidiInputEvents[index]->msg1;
     uint8_t msg2 = MMidiInputEvents[index]->msg2;
     uint8_t msg3 = MMidiInputEvents[index]->msg3;
-    printf("  process.inputevent offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+    printf("  process.h / getInputEvent: offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
 
     clap_event* event = (clap_event*)malloc(sizeof(clap_event));
     MClapInputEvents.push_back(event);
@@ -344,7 +344,7 @@ public:
       if (arg->input_midi) {
         clearInputEvents();
         MMidiPlayer.GetEventsForBlock(MCurrentTime,seconds_per_block,&MMidiInputEvents);
-        deleteInputEvents();
+//        deleteInputEvents();
       }
       else {
         MInputAudio.read(arg->channels,arg->block_size,MAudioInputBuffers);
@@ -355,6 +355,10 @@ public:
 
       plugin->process(plugin,&MClapContext);
       MOutputAudio.write(arg->channels,arg->block_size, MAudioOutputBuffers);
+
+      if (arg->input_midi) {
+        deleteInputEvents();
+      }
 
       MCurrentSample += arg->block_size; // samples_per_block
       MCurrentTime += seconds_per_block;
