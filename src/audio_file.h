@@ -138,7 +138,7 @@ public:
   //----------
 
   void printInfo() {
-    printf("\n");
+    printf("  path:               '%s'\n",MPath);
     printf("  - MInfo.frames      %i\n",(int)MInfo.frames);
     printf("  - MInfo.samplerate  %i\n",MInfo.samplerate);
     printf("  - MInfo.channels    %i\n",MInfo.channels);

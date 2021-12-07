@@ -50,20 +50,24 @@ public:
 
   bool load(const char* APath) {
     MPluginPath = APath;
-    printf("# Loading: %s\n",APath);
+    printf("Loading binary '%s'\n",APath);
     MLibHandle = open_library(APath);
     if (!MLibHandle) {
-      printf("! Error: Couldn't open %s\n", APath);
+      printf("* Error: Couldn't open '%s'\n", APath);
       return false;
     }
+    printf("Binary loaded\n");
+    printf("Getting 'clap_plugin_entry'\n");
     MClapEntry = (struct clap_plugin_entry*)get_library_symbol(MLibHandle,"clap_plugin_entry");
     if (!MClapEntry) {
-      printf("! Error: Couldn't find 'clap_plugin_entry'\n");
+      printf("* Error: Couldn't find 'clap_plugin_entry'\n");
       close_library(MLibHandle);
       return 0;
     }
+    printf("Found 'clap_plugin_entry'\n");
     get_path_only(MPathOnly,APath);
     MClapEntry->init(MPathOnly);
+
     return 1;
   }
 
@@ -73,9 +77,10 @@ public:
   // unload .so
 
   void unload() {
-    printf("# unloading\n");
+    printf("Unloading binary\n");
     MClapEntry->deinit();
     close_library(MLibHandle);
+    printf("Binary unloaded\n");
   }
 
   //----------
@@ -83,34 +88,33 @@ public:
   // create and initialize a plugin instance
 
   Instance* createInstance(const char* APath, uint32_t AIndex) {
-    printf("> creating plugin (index %i)\n",AIndex);
+    printf("Creating plugin (index %i)\n",AIndex);
 
     if (AIndex >= MClapEntry->get_plugin_count()) {
-      printf("  ! index out of bounds\n");
+      printf("* Error: Index out of bounds\n");
       return NULL;
     }
 
     const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
     if (!descriptor) {
-      printf("  ! error getting descriptor\n");
+      printf("* Error: Couldn't get descriptor\n");
       return NULL;
     }
-    printf("  host: 0x%p\n",MHost.getClapHost());
 
-    printf("  > creating instance\n");
+    printf("Creating plugin instance\n");
     const clap_plugin* plugin = MClapEntry->create_plugin( MHost.getClapHost(), descriptor->id );
     if (!plugin) {
-      printf("  ! error creating plugin instance\n");
+      printf("* Error: Couldn't create plugin instance\n");
       return NULL;
     }
-    printf("  > instance created\n");
+    printf("Plugin instance created\n");
 
     bool result = plugin->init(plugin);
     if (!result) {
-      printf("  ! error initializing instance\n");
+      printf("* Error: Couldn't initialize plugin instance\n");
       return NULL;
     }
-    printf("  ! instance initialized\n");
+    printf("Plugin instance initialized\n");
 
     Instance* instance = new Instance(plugin);
     return instance;
@@ -122,10 +126,10 @@ public:
   // destroy instance
 
   void destroyInstance(Instance* AInstance) {
-    printf("> destroying plugin\n");
     const clap_plugin* plugin = AInstance->getClapPlugin();
+    printf("Destroying plugin instance\n");
     plugin->destroy(plugin);
-    printf("> plugin destroyed\n");
+    printf("Plugin instance destroyed\n");
   }
 
   //----------
@@ -134,10 +138,10 @@ public:
 
   void listPlugins() {
     uint32_t plugin_count = MClapEntry->get_plugin_count();
-    printf("# found %i plugins:\n",plugin_count);
+    printf("> found %i plugins\n",plugin_count);
     for (uint32_t i=0; i<plugin_count; i++) {
       const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(i);
-      printf("  %i %s (%s)\n",i,descriptor->name,descriptor->id);
+      printf("  %i. name '%s' id '%s'\n",i,descriptor->name,descriptor->id);
     }
   }
 
@@ -148,6 +152,7 @@ public:
   void printDescriptor(uint32_t AIndex) {
     const clap_plugin_descriptor* descriptor = MClapEntry->get_plugin_descriptor(AIndex);
     if (descriptor) {
+      printf("Descriptor:\n");
       printf("  clap_version: %i.%i.%i\n",descriptor->clap_version.major,descriptor->clap_version.minor,descriptor->clap_version.revision);
       printf("  id            %s\n",      descriptor->id);
       printf("  name          %s\n",      descriptor->name);

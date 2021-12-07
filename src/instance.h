@@ -83,16 +83,12 @@ public:
     MClapExtState            = NULL;// (const clap_plugin_state*)plugin->get_extension(plugin,CLAP_EXT_STATE);
     MClapExtVst2Convert      = NULL;// (const clap_plugin_vst2_convert*)plugin->get_extension(plugin,CLAP_EXT_VST2_CONVERT);
     MClapExtVst3Convert      = NULL;// (const clap_plugin_vst3_convert*)plugin->get_extension(plugin,CLAP_EXT_VST3_CONVERT);
-
   }
 
   //----------
 
   bool activate(float ASampleRate, uint32_t AMinFrames, uint32_t AMaxFrames) {
-    // 0.14.0
     return MClapPlugin->activate(MClapPlugin,ASampleRate,AMinFrames,AMaxFrames);
-    // 0.15.0
-    //return MClapPlugin->activate(MClapPlugin,ASampleRate,1,4096);
   }
 
   //----------
@@ -139,6 +135,7 @@ public:
     printf("extensions:\n");
 
     printf("# audio-ports-config  (%s)\n", (MClapExtAudioPortsConfig) ? "yes" : "no"  );
+
 //    if (MClapExtAudioPortsConfig) {
 //      printf("### CLAP_EXT_AUDIO_PORTS_CONFIG\n");
 //      clap_audio_ports_config config;

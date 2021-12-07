@@ -50,7 +50,7 @@ private: // extensions
   //--------------------
 
   const void* get_extension(const char *extension_id) {
-    printf("from plugin > get_extension(%s)\n",extension_id);
+    printf("from plugin > get_extension(%s) -> NULL\n",extension_id);
     if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)     { return NULL; } //&MClapHostAudioPorts; }
     if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)    { return NULL; } //&MClapHostEventFilter; }
     if (strcmp(extension_id,CLAP_EXT_FD_SUPPORT) == 0)      { return NULL; } //&MClapHostFdSupport; }

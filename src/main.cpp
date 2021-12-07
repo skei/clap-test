@@ -165,7 +165,7 @@ public:
           case 'I':
             MArg.plugin_index = strtof(optarg, &endptr);
             if (endptr == optarg) {
-              printf("invalid index: %s\n\n", optarg);
+              printf("* Error: Invalid index: '%s'\n", optarg);
               return false;
             }
             break;
@@ -173,7 +173,7 @@ public:
           case 'i':
             MArg.input_audio = optarg;
             if (endptr == optarg) {
-              printf("invalid input wav: %s\n\n", optarg);
+              printf("* Error: Invalid input wav: '%s'\n", optarg);
               return false;
             }
             break;
@@ -181,7 +181,7 @@ public:
           case 'o':
             MArg.output_audio = optarg;
             if (endptr == optarg) {
-              printf("invalid output wav: %s\n\n", optarg);
+              printf("* Error: Invalid output wav: '%s'\n", optarg);
               return false;
             }
             break;
@@ -189,7 +189,7 @@ public:
           case 'm':
             MArg.input_midi = optarg;
             if (endptr == optarg) {
-              printf("invalid input midi: %s\n\n", optarg);
+              printf("* Error: Invalid input midi: '%s'\n", optarg);
               return false;
             }
             break;
@@ -197,7 +197,7 @@ public:
           case 's':
             MArg.sample_rate = strtof(optarg, &endptr);
             if (endptr == optarg) {
-              printf("invalid sample rate: %s\n\n", optarg);
+              printf("* Error: invalid sample rate: '%s'\n", optarg);
               return false;
             }
             break;
@@ -205,7 +205,7 @@ public:
           case 'b':
             MArg.block_size = strtol(optarg, &endptr, 0);
             if ((endptr == optarg) || (MArg.block_size <= 0)) {
-              printf("invalid block size: %s\n\n", optarg);
+              printf("* Error: Invalid block size: '%s'\n", optarg);
               return false;
             }
             break;
@@ -213,7 +213,7 @@ public:
           case 'c':
             MArg.channels = strtol(optarg, &endptr, 0);
             if ((endptr == optarg) || (MArg.channels <= 0)) {
-              printf("invalid channel count: %s\n\n", optarg);
+              printf("* Error: Invalid channel count: '%s'\n", optarg);
               return 0;
             }
             break;
@@ -221,7 +221,7 @@ public:
           case 'd':
             MArg.decay_seconds = strtof(optarg, &endptr);
             if (endptr == optarg) {
-              printf("invalid decay_seconds: %s\n\n", optarg);
+              printf("* Error: Invalid decay_seconds: '%s'\n", optarg);
               return 0;
             }
             break;
@@ -259,17 +259,17 @@ public:
     //printf("> plugin created\n");
     bool result = instance->activate(samplerate,blocksize,blocksize);
     if (!result) {
-      printf("! couldn't activate plugin\n");
+      printf("* Error: Couldn't activate plugin instance\n");
       //destroy
       MEntry.destroyInstance(instance);
       delete instance;
       return NULL;
     }
-    printf("> plugin activated\n");
+    printf("Plugin instance activated\n");
 
     result = instance->start_processing();
     if (!result) {
-      printf("! couldn't start processing\n");
+      printf("* Error: Couldn't start processing\n");
       //deactivate
       instance->deactivate();
       //destroy
@@ -277,7 +277,7 @@ public:
       delete instance;
       return NULL;
     }
-    printf("> started processing\n");
+    printf("Started processing\n");
     return instance;
   }
 
@@ -285,9 +285,9 @@ public:
 
   void stopPlugin(Instance* instance) {
     instance->stop_processing();
-    printf("+ stopped processing\n");
+    printf("Stopped processing\n");
     instance->deactivate();
-    printf("+ deactivated plugin\n");
+    printf("Deactivated plugin instance\n");
     MEntry.destroyInstance(instance);
     delete instance;
   }
@@ -304,21 +304,23 @@ public:
           MEntry.printDescriptor(MArg.plugin_index);
         }
         else {
+          printf("Starting plugin\n");
           Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate,MArg.block_size);
           if (!instance) {
-            printf("!! error starting plugin!\n");
+            printf("* Error: Couldn't start plugin\n");
             return -1;
           }
           else {
-            instance->printInfo();
+            //instance->printInfo();
             MProcess.process(instance,&MArg);
             stopPlugin(instance);
+            printf("Plugin stopped\n");
           }
         }
         MEntry.unload();
       }
       else {
-        printf("!! couldn't load plugin\n");
+        printf("* Error: Couldn't load plugin\n");
         return -1;
       }
     }

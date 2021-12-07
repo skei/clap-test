@@ -164,11 +164,13 @@ public: // callbacks
 public:
 //------------------------------
 
+ //TODO: input + output channel counts?
+
   void prepare_audio_inputs(uint32_t channels, uint32_t latency=0) {
     MClapAudioInputs.data32           = MAudioInputBuffers;
     MClapAudioInputs.data64           = NULL;
-    MClapAudioInputs.channel_count    = 0;//channels; //TODO: input + output channels.. remember to fix this before we try an audio effect (needs inputs)
-    MClapAudioInputs.latency          = 0;//latency;
+    MClapAudioInputs.channel_count    = channels;
+    MClapAudioInputs.latency          = latency;
     MClapAudioInputs.constant_mask    = 0;
   }
 
@@ -243,7 +245,7 @@ private:
 
   /*
     called before processing current audiobuffer
-    allocates a clap_event for each midi event in MMMidiInputEvents
+    allocates a clap_event for each midi event in MidiInputEvents
     initializes it, and appends it to MClapInputEvents
   */
 
@@ -256,7 +258,7 @@ private:
       uint8_t msg2    = midievent->msg2;
       uint8_t msg3    = midievent->msg3;
       int32_t offset  = floorf(time * MSampleRate);
-      printf("  MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+      printf("> MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
       clap_event* event;
       switch( msg1 & 0xF0) {
 
@@ -353,44 +355,43 @@ public:
     // audio input
 
     if (arg->input_audio) {
-      printf("> opening audio input file: %s\n",arg->input_audio);
+      printf("Opening audio input file: '%s'\n",arg->input_audio);
       bool result = MAudioInputFile.open(arg->input_audio,AUDIO_FILE_READ);
       if (!result) {
-        printf("! couldn't open audio input file\n");
+        printf("* Error: Couldn't open audio input file\n");
         return;
       }
-      printf("> audio input file opened\n");
-      printf("    - length: %i\n",(int)MAudioInputFile.getInfo()->frames);
+      printf("Audio input file opened (length = %i frames\n",(int)MAudioInputFile.getInfo()->frames);
       num_samples = MAudioInputFile.getInfo()->frames;
     }
 
     // audio output
 
     if (arg->output_audio) {
-      printf("> opening audio output file: %s\n",arg->output_audio);
+      printf("Opening audio output file: '%s'\n",arg->output_audio);
       bool result = MAudioOutputFile.open(arg->output_audio,AUDIO_FILE_WRITE,arg->sample_rate,arg->channels);
       if (!result ){
-        printf("! couldn't open audio output file\n");
+        printf("* Error: Couldn't open audio output file\n");
         return;
       }
-      printf("> audio output file opened\n");
+      printf("Audio output file opened\n");
     }
     else {
-      printf("!! no audio output file defined\n");
+      printf("* Error: No audio output file specified\n");
       return;
     }
 
     //-----
 
-    printf("* length: %f seconds\n",num_samples / arg->sample_rate);
+    printf("> length = %f seconds\n",num_samples / arg->sample_rate);
 
     if (num_samples == 0) {
-      printf("!! num_samples == 0\n");
+      printf("* Error: num_samples == 0\n");
       //return;
     }
 
     if (num_samples >= (arg->sample_rate * 180.0)) {
-      printf("! truncating to 3 minute\n" );
+      printf("> Truncating to 3 minute\n" );
       num_samples = 180.0 * arg->sample_rate;
     }
 
@@ -411,9 +412,9 @@ public:
 
     // process all blocks
 
-    printf("> processing %i blocks\n",num_blocks);
+    printf("Processing %i blocks\n",num_blocks);
     for (uint32_t i=0; i<num_blocks; i++) {
-      printf("block %i (samplepos %i)\n",i,MCurrentSample);
+      printf("  block %i (samplepos %i)\n",i,MCurrentSample);
 
       // events for current block
       if (arg->input_midi) {
@@ -442,7 +443,7 @@ public:
       MCurrentTime += seconds_per_block;
     }
 
-    printf("> finished processing\n");
+    printf("Finished processing\n");
 
     // cleanup
 
@@ -450,17 +451,17 @@ public:
 
     if (arg->input_midi) {
       MMidiFile.unload();
-      printf("> unloaded midi file\n");
+      printf("Unloaded midi file\n");
     }
 
     if (arg->input_audio) {
       MAudioInputFile.close();
-      printf("> audio input file closed\n");
+      printf("Audio input file closed\n");
     }
 
     if (arg->output_audio) {
       MAudioOutputFile.close();
-      printf("> audio output file closed\n");
+      printf("Audio output file closed\n");
     }
 
   }
