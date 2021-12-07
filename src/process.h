@@ -183,25 +183,42 @@ public:
     MClapAudioOutputs.constant_mask   = 0;
   }
 
+
+
   void prepare_event_inputs() {
-    MClapEventInputs.ctx              = this;//NULL;
+    MClapEventInputs.ctx              = this; // NULL;                    // reserved pointer for the list
     MClapEventInputs.size             = &process_input_events_size;
-    MClapEventInputs.get              = &process_input_events_get;
-    MClapEventInputs.push_back        = &process_input_events_push_back;
+    MClapEventInputs.get              = &process_input_events_get;        // Don't free the return event, it belongs to the list
+    MClapEventInputs.push_back        = &process_input_events_push_back;  // Makes a copy of the event
   }
 
   void prepare_event_outputs() {
-    MClapEventOutputs.ctx             = this;//NULL;
+    MClapEventOutputs.ctx             = this; // NULL;
     MClapEventOutputs.size            = &process_output_events_size;
     MClapEventOutputs.get             = &process_output_events_get;
     MClapEventOutputs.push_back       = &process_output_events_push_back;
   }
 
+  /*
+    CLAP_TRANSPORT_HAS_TEMPO
+    CLAP_TRANSPORT_HAS_BEATS_TIMELINE
+    CLAP_TRANSPORT_HAS_SECONDS_TIMELINE
+    CLAP_TRANSPORT_HAS_TIME_SIGNATURE
+    CLAP_TRANSPORT_IS_PLAYING
+    CLAP_TRANSPORT_IS_RECORDING
+    CLAP_TRANSPORT_IS_LOOP_ACTIVE
+    CLAP_TRANSPORT_IS_WITHIN_PRE_ROLL
+
+    TODO:
+      get tempo/timesig from midifile
+      increase counter as we render the blocks
+  */
+
   void prepare_transport() {
     MClapTransport.flags              = CLAP_TRANSPORT_IS_PLAYING;
     MClapTransport.song_pos_beats     = 0;
     MClapTransport.song_pos_seconds   = 0;
-    MClapTransport.tempo              = 0.0;
+    MClapTransport.tempo              = 120.0;
     MClapTransport.tempo_inc          = 0.0;
     MClapTransport.bar_start          = 0;
     MClapTransport.bar_number         = 0;
@@ -209,16 +226,20 @@ public:
     MClapTransport.loop_end_beats     = 0;
     MClapTransport.loop_start_seconds = 0;
     MClapTransport.loop_end_seconds   = 0;
-    MClapTransport.tsig_num           = 0;
-    MClapTransport.tsig_denom         = 0;
+    MClapTransport.tsig_num           = 4;
+    MClapTransport.tsig_denom         = 4;
   }
 
-  void prepare_context(/*uint32_t channels,*/ uint32_t blocksize, uint32_t latency=0) {
-    MClapContext.steady_time          = MCurrentSample;
-    MClapContext.frames_count         = blocksize;
+  void prepare_context(uint32_t channels, uint32_t blocksize, uint32_t latency=0) {
+    MClapContext.steady_time          = MCurrentSample;     // a steady sample time counter, requiered
+    MClapContext.frames_count         = blocksize;          // number of frame to process
     MClapContext.transport            = &MClapTransport;
     MClapContext.audio_inputs         = &MClapAudioInputs;
     MClapContext.audio_outputs        = &MClapAudioOutputs;
+
+    MClapContext.audio_inputs_count   = 0; // TODO
+    MClapContext.audio_outputs_count  = channels;
+
     MClapContext.in_events            = &MClapEventInputs;
     MClapContext.out_events           = &MClapEventOutputs;
   }
@@ -239,6 +260,13 @@ private:
       MClapInputEvents[i] = NULL;
     }
     MClapInputEvents.clear();
+
+    /*
+      we don't allocate any midievents
+      (just get pointers to existing ones),
+      so nothing to free
+    */
+
     MMidiInputEvents.clear();
   }
 
@@ -248,6 +276,7 @@ private:
     called before processing current audiobuffer
     allocates a clap_event for each midi event in MidiInputEvents
     initializes it, and appends it to MClapInputEvents
+
   */
 
   void convertInputEvents() {
@@ -407,7 +436,7 @@ public:
     prepare_audio_outputs(arg->channels,0);
     prepare_event_inputs();
     prepare_event_outputs();
-    prepare_context(arg->block_size,0);
+    prepare_context(arg->channels,arg->block_size,0);
 
     MCurrentSample  = 0;    // current position (in samples)
     MCurrentTime    = 0.0;  // current position (in seconds)

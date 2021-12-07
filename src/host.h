@@ -280,8 +280,8 @@ private: // clap host
   //----------
 
   struct clap_host MClapHost = {
-    CLAP_VERSION,
-    this,
+    CLAP_VERSION,   // initialized to CLAP_VERSION
+    this,           // reserved pointer for the host
     HOST_NAME,      // "clap-test",
     HOST_AUTHOR,    // "Tor-Helge Skei",
     HOST_URL,       // "https://torhelgeskei.com",
