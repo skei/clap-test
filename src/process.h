@@ -33,12 +33,14 @@ private:
 
   AudioFile             MAudioInputFile;
   AudioFile             MAudioOutputFile;
-  float                 MAudioInputBuffer1[MAX_BLOCK_SIZE];
-  float                 MAudioInputBuffer2[MAX_BLOCK_SIZE];
-  float*                MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
-  float                 MAudioOutputBuffer1[MAX_BLOCK_SIZE];
-  float                 MAudioOutputBuffer2[MAX_BLOCK_SIZE];
-  float*                MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
+
+  alignas(32) float   MAudioInputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioInputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float   MAudioOutputBuffer2[MAX_BLOCK_SIZE];
+
+  /*alignas(32)*/ float*  MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
+  /*alignas(32)*/ float*  MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
 
   MidiFile              MMidiFile;
   MidiPlayer            MMidiPlayer;
@@ -84,20 +86,61 @@ public:
     printf("  process.h / getInputEvent: offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
 
     clap_event* event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
-    memset(event,0,sizeof(clap_event));
-
-    event->type = CLAP_EVENT_MIDI;
-    event->time = offset;
-    event->midi.data[0] = msg1;
-    event->midi.data[1] = msg2;
-    event->midi.data[2] = msg3;
-
-//      event->type = CLAP_EVENT_NOTE_ON;
-//      event->note.key = 1;
-//      event->note.channel = 2;
-//      event->note.velocity = 0.5;
-
     MClapInputEvents.push_back(event);
+    memset(event,0,sizeof(clap_event));
+    event->time = offset;
+
+    switch( msg1 & 0xF0) {
+      case 0x80: // note off
+        event->type             = CLAP_EVENT_NOTE_OFF;
+        event->note.port_index  = 0;
+        event->note.key         = msg2;
+        event->note.channel     = msg1 & 0x0f;
+        event->note.velocity    = msg3 / 127.0;
+        break;
+      case 0x90: // note on
+        event->type             = CLAP_EVENT_NOTE_ON;
+        event->note.port_index  = 0;
+        event->note.key         = msg2;
+        event->note.channel     = msg1 & 0x0f;
+        event->note.velocity    = msg3 / 127.0;
+        break;
+//      case 0xA0: // poly aftertouch
+//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+//        event->note_expression.port_index     = 0;
+//        event->note_expression.key            = msg2;
+//        event->note_expression.channel        = msg1 & 0x0f;
+//        event->note_expression.value          = msg3 / 127.0; // TODO
+//        break;
+//      case 0xB0: // control change
+//        break;
+//      case 0xC0: // program change
+//        break;
+//      case 0xD0: // channel aftertouch
+//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+//        event->note_expression.port_index     = 0;
+//        event->note_expression.key            = msg2;
+//        event->note_expression.channel        = msg1 & 0x0f;
+//        event->note_expression.value          = msg3 / 127.0; // TODO
+//        break;
+//      case 0xE0: // pitch bend
+//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
+//        event->note_expression.port_index     = 0;
+//        event->note_expression.key            = msg2;
+//        event->note_expression.channel        = msg1 & 0x0f;
+//        event->note_expression.value          = msg3 / 127.0; // TODO
+//        break;
+//      default:
+//        event->type = CLAP_EVENT_MIDI;
+//        event->midi.data[0] = msg1;
+//        event->midi.data[1] = msg2;
+//        event->midi.data[2] = msg3;
+//        break;
+    }
+
     return event;
 
   }

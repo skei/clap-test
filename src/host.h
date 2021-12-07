@@ -51,21 +51,21 @@ private: // extensions
 
   const void* get_extension(const char *extension_id) {
     printf("from plugin > get_extension(%s)\n",extension_id);
-    if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)     { return &MClapHostAudioPorts; }
-    if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)    { return &MClapHostEventFilter; }
-    if (strcmp(extension_id,CLAP_EXT_FD_SUPPORT) == 0)      { return &MClapHostFdSupport; }
-    if (strcmp(extension_id,CLAP_EXT_FILE_REFERENCE) == 0)  { return &MClapHostFileReference; }
-    if (strcmp(extension_id,CLAP_EXT_GUI) == 0)             { return &MClapHostGui; }
-    if (strcmp(extension_id,CLAP_EXT_LATENCY) == 0)         { return &MClapHostLatency; }
-    if (strcmp(extension_id,CLAP_EXT_LOG) == 0)             { return &MClapHostLog; }
-    if (strcmp(extension_id,CLAP_EXT_NOTE_NAME) == 0)       { return &MClapHostNoteName; }
-    if (strcmp(extension_id,CLAP_EXT_PARAMS) == 0)          { return &MClapHostParams; }
-    if (strcmp(extension_id,CLAP_EXT_QUICK_CONTROLS) == 0)  { return &MClapHostQuickControls; }
-    if (strcmp(extension_id,CLAP_EXT_STATE) == 0)           { return &MClapHostState; }
-    if (strcmp(extension_id,CLAP_EXT_THREAD_CHECK) == 0)    { return &MClapHostThreadCheck; }
-    if (strcmp(extension_id,CLAP_EXT_THREAD_POOL) == 0)     { return &MClapHostThreadPool; }
-    if (strcmp(extension_id,CLAP_EXT_TIMER_SUPPORT) == 0)   { return &MClapHostTimerSupport; }
-    if (strcmp(extension_id,CLAP_EXT_TRACK_INFO) == 0)      { return &MClapHostTrackInfo; }
+    if (strcmp(extension_id,CLAP_EXT_AUDIO_PORTS) == 0)     { return NULL; } //&MClapHostAudioPorts; }
+    if (strcmp(extension_id,CLAP_EXT_EVENT_FILTER) == 0)    { return NULL; } //&MClapHostEventFilter; }
+    if (strcmp(extension_id,CLAP_EXT_FD_SUPPORT) == 0)      { return NULL; } //&MClapHostFdSupport; }
+    if (strcmp(extension_id,CLAP_EXT_FILE_REFERENCE) == 0)  { return NULL; } //&MClapHostFileReference; }
+    if (strcmp(extension_id,CLAP_EXT_GUI) == 0)             { return NULL; } //&MClapHostGui; }
+    if (strcmp(extension_id,CLAP_EXT_LATENCY) == 0)         { return NULL; } //&MClapHostLatency; }
+    if (strcmp(extension_id,CLAP_EXT_LOG) == 0)             { return NULL; } //&MClapHostLog; }
+    if (strcmp(extension_id,CLAP_EXT_NOTE_NAME) == 0)       { return NULL; } //&MClapHostNoteName; }
+    if (strcmp(extension_id,CLAP_EXT_PARAMS) == 0)          { return NULL; } //&MClapHostParams; }
+    if (strcmp(extension_id,CLAP_EXT_QUICK_CONTROLS) == 0)  { return NULL; } //&MClapHostQuickControls; }
+    if (strcmp(extension_id,CLAP_EXT_STATE) == 0)           { return NULL; } //&MClapHostState; }
+    if (strcmp(extension_id,CLAP_EXT_THREAD_CHECK) == 0)    { return NULL; } //&MClapHostThreadCheck; }
+    if (strcmp(extension_id,CLAP_EXT_THREAD_POOL) == 0)     { return NULL; } //&MClapHostThreadPool; }
+    if (strcmp(extension_id,CLAP_EXT_TIMER_SUPPORT) == 0)   { return NULL; } //&MClapHostTimerSupport; }
+    if (strcmp(extension_id,CLAP_EXT_TRACK_INFO) == 0)      { return NULL; } //&MClapHostTrackInfo; }
     return NULL;
   }
 
@@ -231,9 +231,12 @@ private: // extensions
   // clap.timer-support
   //--------------------
 
+  // return true for testing (ace)
+
   bool timer_support_register_timer(uint32_t period_ms, clap_id *timer_id) {
     printf("from plugin > timer-support.register_timer(%i)\n",period_ms);
-    return false;
+    *timer_id = 0;
+    return true;//false;
   }
 
   bool timer_support_unregister_timer(clap_id timer_id) {
