@@ -40,6 +40,7 @@ private:
   uint32_t              MCurrentSample  = 0;
   float                 MCurrentTime    = 0.0;
   MidiSequence*         MMidiSequence   = NULL;
+
   MidiEvents            MMidiInputEvents;
   clap_events           MClapInputEvents;
 
