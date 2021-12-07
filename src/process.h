@@ -3,7 +3,6 @@
 //----------------------------------------------------------------------
 
 // in progress!!
-// untested..
 
 #define MAX_BLOCK_EVENTS  1024
 #define MAX_BLOCK_SIZE    65536
@@ -33,26 +32,33 @@ private:
 
   AudioFile             MAudioInputFile;
   AudioFile             MAudioOutputFile;
-
-  alignas(32) float   MAudioInputBuffer1[MAX_BLOCK_SIZE];
-  alignas(32) float   MAudioInputBuffer2[MAX_BLOCK_SIZE];
-  alignas(32) float   MAudioOutputBuffer1[MAX_BLOCK_SIZE];
-  alignas(32) float   MAudioOutputBuffer2[MAX_BLOCK_SIZE];
-
-  /*alignas(32)*/ float*  MAudioInputBuffers[2] = { MAudioInputBuffer1, MAudioInputBuffer2 };
-  /*alignas(32)*/ float*  MAudioOutputBuffers[2] = { MAudioOutputBuffer1, MAudioOutputBuffer2 };
-
   MidiFile              MMidiFile;
   MidiPlayer            MMidiPlayer;
-  MidiSequence*         MMidiSequence;
-
-  MidiEvents            MMidiInputEvents;
-  clap_events           MClapInputEvents;
 
   Instance*             MInstance       = NULL;
   float                 MSampleRate     = 0.0;
   uint32_t              MCurrentSample  = 0;
   float                 MCurrentTime    = 0.0;
+  MidiSequence*         MMidiSequence   = NULL;
+  MidiEvents            MMidiInputEvents;
+  clap_events           MClapInputEvents;
+
+  alignas(32) float MAudioInputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float MAudioInputBuffer2[MAX_BLOCK_SIZE];
+  alignas(32) float MAudioOutputBuffer1[MAX_BLOCK_SIZE];
+  alignas(32) float MAudioOutputBuffer2[MAX_BLOCK_SIZE];
+
+  //alignas(32)
+  float* MAudioInputBuffers[2] = {
+    MAudioInputBuffer1,
+    MAudioInputBuffer2
+  };
+
+  //alignas(32)
+  float* MAudioOutputBuffers[2] = {
+    MAudioOutputBuffer1,
+    MAudioOutputBuffer2
+  };
 
 //------------------------------
 public:
@@ -71,78 +77,13 @@ public:
 //------------------------------
 
   uint32_t input_events_size() {
-    return MMidiInputEvents.size();
+    return MClapInputEvents.size();
   }
 
   //----------
 
   const clap_event* input_events_get(uint32_t index) {
-    MidiEvent* midievent = MMidiInputEvents[index];
-    float   time    = midievent->time - MCurrentTime;
-    uint8_t msg1    = midievent->msg1;
-    uint8_t msg2    = midievent->msg2;
-    uint8_t msg3    = midievent->msg3;
-    int32_t offset  = floorf(time * MSampleRate);
-    printf("  process.h / getInputEvent: offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
-
-    clap_event* event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
-    MClapInputEvents.push_back(event);
-    memset(event,0,sizeof(clap_event));
-    event->time = offset;
-
-    switch( msg1 & 0xF0) {
-      case 0x80: // note off
-        event->type             = CLAP_EVENT_NOTE_OFF;
-        event->note.port_index  = 0;
-        event->note.key         = msg2;
-        event->note.channel     = msg1 & 0x0f;
-        event->note.velocity    = msg3 / 127.0;
-        break;
-      case 0x90: // note on
-        event->type             = CLAP_EVENT_NOTE_ON;
-        event->note.port_index  = 0;
-        event->note.key         = msg2;
-        event->note.channel     = msg1 & 0x0f;
-        event->note.velocity    = msg3 / 127.0;
-        break;
-//      case 0xA0: // poly aftertouch
-//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
-//        event->note_expression.port_index     = 0;
-//        event->note_expression.key            = msg2;
-//        event->note_expression.channel        = msg1 & 0x0f;
-//        event->note_expression.value          = msg3 / 127.0; // TODO
-//        break;
-//      case 0xB0: // control change
-//        break;
-//      case 0xC0: // program change
-//        break;
-//      case 0xD0: // channel aftertouch
-//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
-//        event->note_expression.port_index     = 0;
-//        event->note_expression.key            = msg2;
-//        event->note_expression.channel        = msg1 & 0x0f;
-//        event->note_expression.value          = msg3 / 127.0; // TODO
-//        break;
-//      case 0xE0: // pitch bend
-//        event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-//        event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
-//        event->note_expression.port_index     = 0;
-//        event->note_expression.key            = msg2;
-//        event->note_expression.channel        = msg1 & 0x0f;
-//        event->note_expression.value          = msg3 / 127.0; // TODO
-//        break;
-//      default:
-//        event->type = CLAP_EVENT_MIDI;
-//        event->midi.data[0] = msg1;
-//        event->midi.data[1] = msg2;
-//        event->midi.data[2] = msg3;
-//        break;
-    }
-
-    return event;
-
+    return MClapInputEvents[index];
   }
 
   //----------
@@ -176,8 +117,7 @@ public: // callbacks
   static
   uint32_t process_input_events_size(const struct clap_event_list* list) {
     Process* process = (Process*)list->ctx;
-    if (process) return process->input_events_size();
-    return 0;
+    return process->input_events_size();
   }
 
   //----------
@@ -185,8 +125,7 @@ public: // callbacks
   static
   const clap_event* process_input_events_get(const struct clap_event_list* list, uint32_t index) {
     Process* process = (Process*)list->ctx;
-    if (process) return process->input_events_get(index);
-    return NULL;
+    return process->input_events_get(index);
   }
 
   //----------
@@ -194,7 +133,7 @@ public: // callbacks
   static
   void process_input_events_push_back(const struct clap_event_list* list, const clap_event *event) {
     Process* process = (Process*)list->ctx;
-    if (process) process->input_events_push_back(event);
+    process->input_events_push_back(event);
   }
 
   //----------
@@ -202,8 +141,7 @@ public: // callbacks
   static
   uint32_t process_output_events_size(const struct clap_event_list* list) {
     Process* process = (Process*)list->ctx;
-    if (process) return process->output_events_size();
-    return 0;
+    return process->output_events_size();
   }
 
   //----------
@@ -211,8 +149,7 @@ public: // callbacks
   static
   const clap_event* process_output_events_get(const struct clap_event_list* list, uint32_t index) {
     Process* process = (Process*)list->ctx;
-    if (process) return process->output_events_get(index);
-    return NULL;
+    return process->output_events_get(index);
   }
 
   //----------
@@ -220,7 +157,7 @@ public: // callbacks
   static
   void process_output_events_push_back(const struct clap_event_list* list, const clap_event *event) {
     Process* process = (Process*)list->ctx;
-    if (process) process->output_events_push_back(event);
+    process->output_events_push_back(event);
   }
 
 //------------------------------
@@ -230,8 +167,8 @@ public:
   void prepare_audio_inputs(uint32_t channels, uint32_t latency=0) {
     MClapAudioInputs.data32           = MAudioInputBuffers;
     MClapAudioInputs.data64           = NULL;
-    MClapAudioInputs.channel_count    = channels;
-    MClapAudioInputs.latency          = latency;
+    MClapAudioInputs.channel_count    = 0;//channels; //TODO: input + output channels.. remember to fix this before we try an audio effect (needs inputs)
+    MClapAudioInputs.latency          = 0;//latency;
     MClapAudioInputs.constant_mask    = 0;
   }
 
@@ -287,35 +224,110 @@ public:
 private:
 //------------------------------
 
-  //const clap_event* getInputEvent(uint32_t AIndex) {
-  //  return NULL;
-  //}
-
-  //----------
-
   /*
-    start with 0 events for current blocks
+    free all clap_events we (potentially) appended in convertInputEvents
+    and reset both MClapInputEvents and MMidiInputEvents
   */
 
   void clearInputEvents() {
-    MMidiInputEvents.clear();
+    uint32_t num_events = MClapInputEvents.size();
+    for (uint32_t i=0; i<num_events; i++) {
+      if (MClapInputEvents[i]) free( MClapInputEvents[i] );
+      MClapInputEvents[i] = NULL;
+    }
     MClapInputEvents.clear();
+    MMidiInputEvents.clear();
   }
 
   //----------
 
   /*
-    delete events we potentially added
-    - MidiPlayer.GetEventsForBlock()
-    - Process.input_events_get()
+    called before processing current audiobuffer
+    allocates a clap_event for each midi event in MMMidiInputEvents
+    initializes it, and appends it to MClapInputEvents
   */
 
-  void deleteInputEvents() {
-    for (uint32_t i=0; i<MClapInputEvents.size(); i++) {
-      free( MClapInputEvents[i] );
-    }
-    MClapInputEvents.clear();
+  void convertInputEvents() {
+    uint32_t num_events = MMidiInputEvents.size();
+    for (uint32_t i=0; i<num_events; i++) {
+      MidiEvent* midievent = MMidiInputEvents[i];
+      float   time    = midievent->time - MCurrentTime;
+      uint8_t msg1    = midievent->msg1;
+      uint8_t msg2    = midievent->msg2;
+      uint8_t msg3    = midievent->msg3;
+      int32_t offset  = floorf(time * MSampleRate);
+      printf("  MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+      clap_event* event;
+      switch( msg1 & 0xF0) {
+
+        case 0x80: // note off
+          event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
+          memset(event,0,sizeof(clap_event));
+          event->time             = offset;
+          event->type             = CLAP_EVENT_NOTE_OFF;
+          event->note.port_index  = 0;
+          event->note.key         = msg2;
+          event->note.channel     = msg1 & 0x0f;
+          event->note.velocity    = msg3 / 127.0;
+          MClapInputEvents.push_back(event);
+          break;
+
+        case 0x90: // note on
+          event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
+          memset(event,0,sizeof(clap_event));
+          event->time             = offset;
+          event->type             = CLAP_EVENT_NOTE_ON;
+          event->note.port_index  = 0;
+          event->note.key         = msg2;
+          event->note.channel     = msg1 & 0x0f;
+          event->note.velocity    = msg3 / 127.0;
+          MClapInputEvents.push_back(event);
+          break;
+
+        //case 0xA0: // poly aftertouch
+        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+        //  event->note_expression.port_index     = 0;
+        //  event->note_expression.key            = msg2;
+        //  event->note_expression.channel        = msg1 & 0x0f;
+        //  event->note_expression.value          = msg3 / 127.0; // TODO
+        //  break;
+
+        //case 0xB0: // control change
+        //  break;
+
+        //case 0xC0: // program change
+        //  break;
+
+        //case 0xD0: // channel aftertouch
+        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+        //  event->note_expression.port_index     = 0;
+        //  event->note_expression.key            = msg2;
+        //  event->note_expression.channel        = msg1 & 0x0f;
+        //  event->note_expression.value          = msg3 / 127.0; // TODO
+        //  break;
+
+        //case 0xE0: // pitch bend
+        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
+        //  event->note_expression.port_index     = 0;
+        //  event->note_expression.key            = msg2;
+        //  event->note_expression.channel        = msg1 & 0x0f;
+        //  event->note_expression.value          = msg3 / 127.0; // TODO
+        //  break;
+
+        //default:
+        //  event->type = CLAP_EVENT_MIDI;
+        //  event->midi.data[0] = msg1;
+        //  event->midi.data[1] = msg2;
+        //  event->midi.data[2] = msg3;
+        //  break;
+
+      }  // switch
+    } // for all events
   }
+
 
 //------------------------------
 public:
@@ -377,9 +389,9 @@ public:
       //return;
     }
 
-    if (num_samples >= (arg->sample_rate * 300.0)) {
-      printf("! truncating to 5 minutes\n" );
-      num_samples = 300.0 * arg->sample_rate;
+    if (num_samples >= (arg->sample_rate * 180.0)) {
+      printf("! truncating to 3 minute\n" );
+      num_samples = 180.0 * arg->sample_rate;
     }
 
     uint32_t num_blocks = num_samples / arg->block_size;
@@ -401,12 +413,15 @@ public:
 
     printf("> processing %i blocks\n",num_blocks);
     for (uint32_t i=0; i<num_blocks; i++) {
-      //printf("block %i\n",i);
+      printf("block %i (samplepos %i)\n",i,MCurrentSample);
 
       // events for current block
       if (arg->input_midi) {
+
         clearInputEvents();
         MMidiPlayer.GetEventsForBlock(MCurrentTime,seconds_per_block,&MMidiInputEvents);
+        convertInputEvents();
+
       }
       //else {
       if (arg->input_audio) {
@@ -416,15 +431,12 @@ public:
       // update current time
       MClapContext.steady_time = MCurrentSample;
       MClapContext.frames_count = arg->block_size;
+
       // process
       plugin->process(plugin,&MClapContext);
+
       // save audio output
       MAudioOutputFile.write(arg->channels,arg->block_size, MAudioOutputBuffers);
-
-      // prepare for next block
-      if (arg->input_midi) {
-        deleteInputEvents();
-      }
 
       MCurrentSample += arg->block_size; // samples_per_block
       MCurrentTime += seconds_per_block;
@@ -433,6 +445,8 @@ public:
     printf("> finished processing\n");
 
     // cleanup
+
+    clearInputEvents();
 
     if (arg->input_midi) {
       MMidiFile.unload();
