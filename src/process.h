@@ -402,6 +402,7 @@ public:
 
     // prepare
 
+    prepare_transport();
     prepare_audio_inputs(arg->channels,0);
     prepare_audio_outputs(arg->channels,0);
     prepare_event_inputs();
