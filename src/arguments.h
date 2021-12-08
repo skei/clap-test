@@ -13,9 +13,11 @@ typedef struct arguments_t {
   int         block_size;
   int         channels;
   float       decay_seconds;
+  int         animated_parameter;
   int         do_list_plugins;
   int         do_print_descriptor;
   int         do_fuzz_blocksize;
+  int         do_animate;
 } arguments_t;
 
 //----------------------------------------------------------------------

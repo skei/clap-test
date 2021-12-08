@@ -279,7 +279,7 @@ private:
 
   */
 
-  void convertInputEvents() {
+  void convertInputEvents(arguments_t* arg) {
     uint32_t num_events = MMidiInputEvents.size();
     for (uint32_t i=0; i<num_events; i++) {
       MidiEvent* midievent = MMidiInputEvents[i];
@@ -316,51 +316,86 @@ private:
           MClapInputEvents.push_back(event);
           break;
 
-        //case 0xA0: // poly aftertouch
-        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
-        //  event->note_expression.port_index     = 0;
-        //  event->note_expression.key            = msg2;
-        //  event->note_expression.channel        = msg1 & 0x0f;
-        //  event->note_expression.value          = msg3 / 127.0; // TODO
-        //  break;
+        /*
+        case 0xA0: // poly aftertouch
+          event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+          event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+          event->note_expression.port_index     = 0;
+          event->note_expression.key            = msg2;
+          event->note_expression.channel        = msg1 & 0x0f;
+          event->note_expression.value          = msg3 / 127.0; // TODO
+          break;
+        */
 
-/*
-  TODO:
-  map midi cc to parameters
-  send CLAP_EVENT_PARAM instead of CLAP_EVENT MIDI
-*/
+        /*
+          we need to know more about the parameter
+        */
 
-        //case 0xB0: // control change
-        //  break;
+//        case 0xB0: // control change
+//          if (arg->do_animate && (msg2 == arg->animated_parameter)) {
+//            event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
+//            memset(event,0,sizeof(clap_event));
+//            event->time               = offset;
+//            event->type               = CLAP_EVENT_PARAM_VALUE;
+//            event->param_value.cookie = NULL; // !!!
+//            event->param_id           = msg2;
+//            event->port_index         = 0;
+//            event->key                = 0;
+//            event->channel            = msg1 & 15;
+//            event->flags              = 0; // CLAP_EVENT_PARAM_BEGIN_ADJUST | CLAP_EVENT_PARAM_END_ADJUST | CLAP_EVENT_PARAM_SHOULD_RECORD
+//            event->value              = (float)msg3 / 127.0;
+//            MClapInputEvents.push_back(event)
+//          }
+//          else {
+//            event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
+//            memset(event,0,sizeof(clap_event));
+//            event->time         = offset;
+//            event->type         = CLAP_EVENT_MIDI;
+//            event->midi.data[0] = msg1;
+//            event->midi.data[1] = msg2;
+//            event->midi.data[2] = msg3;
+//            MClapInputEvents.push_back(event);
+//          }
+//          break;
 
-        //case 0xC0: // program change
-        //  break;
+        /*
+        case 0xC0: // program change
+          break;
+        */
 
-        //case 0xD0: // channel aftertouch
-        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
-        //  event->note_expression.port_index     = 0;
-        //  event->note_expression.key            = msg2;
-        //  event->note_expression.channel        = msg1 & 0x0f;
-        //  event->note_expression.value          = msg3 / 127.0; // TODO
-        //  break;
+        /*
+        case 0xD0: // channel aftertouch
+          event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+          event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_PRESSURE;
+          event->note_expression.port_index     = 0;
+          event->note_expression.key            = msg2;
+          event->note_expression.channel        = msg1 & 0x0f;
+          event->note_expression.value          = msg3 / 127.0; // TODO
+          break;
+        */
 
-        //case 0xE0: // pitch bend
-        //  event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
-        //  event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
-        //  event->note_expression.port_index     = 0;
-        //  event->note_expression.key            = msg2;
-        //  event->note_expression.channel        = msg1 & 0x0f;
-        //  event->note_expression.value          = msg3 / 127.0; // TODO
-        //  break;
+        /*
+        case 0xE0: // pitch bend
+          event->type                           = CLAP_EVENT_NOTE_EXPRESSION;
+          event->note_expression.expression_id  = CLAP_NOTE_EXPRESSION_TUNING;
+          event->note_expression.port_index     = 0;
+          event->note_expression.key            = 0;
+          event->note_expression.channel        = msg1 & 0x0f;
+          event->note_expression.value          = (float)((msg2 * 128) + msg3) / 127.0;
+          break;
+        */
 
-        //default:
-        //  event->type = CLAP_EVENT_MIDI;
-        //  event->midi.data[0] = msg1;
-        //  event->midi.data[1] = msg2;
-        //  event->midi.data[2] = msg3;
-        //  break;
+        /*
+        default:
+          event = (clap_event*)malloc(sizeof(clap_event));  // deleted in deleteInputEvents()
+          memset(event,0,sizeof(clap_event));
+          event->time         = offset;
+          event->type         = CLAP_EVENT_MIDI;
+          event->midi.data[0] = msg1;
+          event->midi.data[1] = msg2;
+          event->midi.data[2] = msg3;
+          MClapInputEvents.push_back(event);
+        */
 
       }  // switch
     } // for all events
@@ -467,7 +502,7 @@ public:
       if (arg->input_midi) {
         clearInputEvents();
         MMidiPlayer.GetEventsForBlock(MCurrentTime,block_size_seconds,&MMidiInputEvents);
-        convertInputEvents();
+        convertInputEvents(arg);
       }
 
       //else {
