@@ -5,11 +5,6 @@ in progress, in motion, ..
 bugs/issues
 ------------------------------
 
-* render length
-
-  max(midi_length,audio_input_length)
-  make sure both audio and midi reader handles eof
-
 ----------
 
 ------------------------------
@@ -24,7 +19,7 @@ features
 
 * sidechain audio input
 
-  for compressors
+  for compressors, etc..
   additional AudioFile, plus command line arguments for specifying
   connection to port/channel.. then send additional buffer in process()
 
@@ -33,7 +28,7 @@ features
 * midi cc -> paramter
 
   in midi-player, catch specified cc midi events when preparing events
-  before processing, send param events instead of midi
+  before processing, send param events instead of midi event
 
 ----------
 
@@ -48,7 +43,6 @@ features
 
   -T <value>
   value = int/bitflag, so we can test everything
-
   ways we can test a plugin?
   (command line flags)
   stress testing, "spec compliance", robustness
@@ -72,15 +66,13 @@ improvements
 * printf()
 
   tweak printf output for easier (machine) parsing
-  (failure, success, warning, info..)
+  (failure, success, warning, info.. symbolic..)
 
 ----------
 
 * arguments
 
-  the current one is just confusing and complicated..
-  also, the curent scheme is getting a bit restricted if we want to add
-  multiple audio/midi inputs, outputs, parameters, etc..
+  the current one is confusing and complicated and limited..
 
 ----------
 
