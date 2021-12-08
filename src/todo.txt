@@ -1,0 +1,57 @@
+
+in progress, in motion, ..
+
+------------------------------
+
+
+* audio input/effect
+
+  this should already be working, but untested..
+
+----------
+
+* render length
+
+  max(midi_length,audio_input_length)
+  make sure both audio and midi reader handles eof
+
+----------
+
+* arguments
+
+  the current one is just confusing and complicated..
+  also, the curent scheme is getting a bit restricted if we want to add
+  multiple audio/midi inputs, outputs, parameters, etc..
+
+----------
+
+* block size fuzzing
+
+  random blocksizes
+  keep track of total number of samples we need to render
+
+----------
+
+* midi cc -> paramter
+
+  in midi-player, catch specified cc midi events when preparing events
+  before processing, send param events instead of midi
+
+----------
+
+* midi output
+
+  for midi generating plugins
+  need a midi writer
+
+----------
+
+* sidechain audio input
+
+  for compressors
+  additional AudioFile, plus command line arguments for specifying
+  connection to port/channel.. then send additional buffer in process()
+
+----------
+
+* and always: cleanup, bug fies, etc..
