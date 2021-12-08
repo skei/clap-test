@@ -288,7 +288,7 @@ private:
       uint8_t msg2    = midievent->msg2;
       uint8_t msg3    = midievent->msg3;
       int32_t offset  = floorf(time * MSampleRate);
-      printf("> MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
+      //printf("> MIDI : offset %i : %02x %02x %02x\n",offset,msg1,msg2,msg3);
       clap_event* event;
       switch( msg1 & 0xF0) {
 
@@ -324,6 +324,12 @@ private:
         //  event->note_expression.channel        = msg1 & 0x0f;
         //  event->note_expression.value          = msg3 / 127.0; // TODO
         //  break;
+
+/*
+  TODO:
+  map midi cc to parameters
+  send CLAP_EVENT_PARAM instead of CLAP_EVENT MIDI
+*/
 
         //case 0xB0: // control change
         //  break;
@@ -392,7 +398,9 @@ public:
         return;
       }
       printf("Audio input file opened (length = %i frames\n",(int)MAudioInputFile.getInfo()->frames);
-      num_samples = MAudioInputFile.getInfo()->frames;
+      if (MAudioInputFile.getInfo()->frames > num_samples) {
+        num_samples = MAudioInputFile.getInfo()->frames;
+      }
     }
 
     // audio output
@@ -420,14 +428,15 @@ public:
       //return;
     }
 
+    // because of larry.mid (20 minutes or something..)
     if (num_samples >= (arg->sample_rate * 180.0)) {
       printf("> Truncating to 3 minute\n" );
       num_samples = 180.0 * arg->sample_rate;
     }
 
-    uint32_t num_blocks = num_samples / arg->block_size;
-    num_blocks += 1; // just to be sure :-)
-    float seconds_per_block = arg->block_size / arg->sample_rate;
+//    uint32_t num_blocks = num_samples / arg->block_size;
+//    num_blocks += 1; // just to be sure :-)
+//    float seconds_per_block = arg->block_size / arg->sample_rate;
 
     // prepare
 
@@ -438,40 +447,48 @@ public:
     prepare_event_outputs();
     prepare_context(arg->channels,arg->block_size,0);
 
-    MCurrentSample  = 0;    // current position (in samples)
-    MCurrentTime    = 0.0;  // current position (in seconds)
+    srand(1);
+    MCurrentSample = 0;   // current position (in samples)
+    MCurrentTime = 0.0;   // current position (in seconds)
 
-    // process all blocks
+    while (num_samples > 0) {
 
-    printf("Processing %i blocks\n",num_blocks);
-    for (uint32_t i=0; i<num_blocks; i++) {
-      printf("  block %i (samplepos %i)\n",i,MCurrentSample);
+      // block size
+      uint32_t block_size = arg->block_size;
+      if (arg->do_fuzz_blocksize) {
+        block_size = 1 + (rand() % arg->block_size);
+      }
+      if (block_size > num_samples) {
+        block_size = num_samples;
+      }
+      float block_size_seconds = block_size / arg->sample_rate;
 
       // events for current block
       if (arg->input_midi) {
-
         clearInputEvents();
-        MMidiPlayer.GetEventsForBlock(MCurrentTime,seconds_per_block,&MMidiInputEvents);
+        MMidiPlayer.GetEventsForBlock(MCurrentTime,block_size_seconds,&MMidiInputEvents);
         convertInputEvents();
-
       }
+
       //else {
       if (arg->input_audio) {
-        MAudioInputFile.read(arg->channels,arg->block_size,MAudioInputBuffers);
+        MAudioInputFile.read(arg->channels,block_size,MAudioInputBuffers);
       }
 
-      // update current time
+      // update time
       MClapContext.steady_time = MCurrentSample;
-      MClapContext.frames_count = arg->block_size;
 
       // process
+      MClapContext.frames_count = block_size;
       plugin->process(plugin,&MClapContext);
 
       // save audio output
-      MAudioOutputFile.write(arg->channels,arg->block_size, MAudioOutputBuffers);
+      MAudioOutputFile.write(arg->channels,block_size, MAudioOutputBuffers);
 
-      MCurrentSample += arg->block_size; // samples_per_block
-      MCurrentTime += seconds_per_block;
+      MCurrentSample  += block_size;
+      MCurrentTime    += block_size_seconds;
+      num_samples     -= block_size;
+
     }
 
     printf("Finished processing\n");

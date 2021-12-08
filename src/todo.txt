@@ -22,16 +22,11 @@ features
 
 ----------
 
-* block size fuzzing
+* sidechain audio input
 
-  random blocksizes
-  keep track of total number of samples we need to render
-
-----------
-
-* decay seconds
-
-  just add a certain amount to rendering length
+  for compressors
+  additional AudioFile, plus command line arguments for specifying
+  connection to port/channel.. then send additional buffer in process()
 
 ----------
 
@@ -46,14 +41,6 @@ features
 
   for midi generating plugins
   need a midi writer
-
-----------
-
-* sidechain audio input
-
-  for compressors
-  additional AudioFile, plus command line arguments for specifying
-  connection to port/channel.. then send additional buffer in process()
 
 ----------
 

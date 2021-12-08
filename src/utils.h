@@ -2,9 +2,14 @@
 #define utils_included
 //----------------------------------------------------------------------
 
-// these are a bit hacky..
+//#define MIN(a,b)  (((a) < (b)) ? (a) : (b))
+//#define MAX(a,b)  (((a) > (b)) ? (a) : (b))
 
 //----------------------------------------------------------------------
+
+// these are a bit hacky..
+
+//----------
 
 // /home/skei/test.so -> test.so
 // returns ptr to first character after last /
@@ -23,7 +28,7 @@ const char* get_filename_from_path(const char* path) {
   return NULL;
 }
 
-//----------------------------------------------------------------------
+//----------
 
 // /home/skei/test.so -> /home/skei/
 // inserts a 0 after the last /

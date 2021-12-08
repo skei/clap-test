@@ -51,6 +51,8 @@
 			<Add library="m" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="../LICENSE" />
+		<Unit filename="../readme.txt" />
 		<Unit filename="../src/arguments.h" />
 		<Unit filename="../src/audio_file.h" />
 		<Unit filename="../src/clap/all.h" />
@@ -108,7 +110,9 @@
 		<Unit filename="../src/midi_file.h" />
 		<Unit filename="../src/midi_player.h" />
 		<Unit filename="../src/process.h" />
+		<Unit filename="../src/readme.txt" />
 		<Unit filename="../src/system.h" />
+		<Unit filename="../src/todo.txt" />
 		<Unit filename="../src/utils.h" />
 		<Extensions />
 	</Project>
