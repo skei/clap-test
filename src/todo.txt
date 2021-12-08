@@ -5,6 +5,10 @@ in progress, in motion, ..
 bugs/issues
 ------------------------------
 
+* tempo, bpm
+
+  read tempo, bpm from midi file..
+
 ----------
 
 ------------------------------
