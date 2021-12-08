@@ -170,23 +170,23 @@ public:
       }
     }
 
-    printf("# event-filter        (%s)\n", (MClapExtEventFilter) ? "yes" : "no"  );
-    printf("# fd-support          (%s)\n", (MClapExtFdSupport) ? "yes" : "no"  );
-    printf("# gui                 (%s)\n", (MClapExtGui) ? "yes" : "no"  );
-    printf("# gui-x11             (%s)\n", (MClapExtGuiX11) ? "yes" : "no"  );
-    printf("# latency             (%s)\n", (MClapExtLatency) ? "yes" : "no"  );
-    printf("# note-name           (%s)\n", (MClapExtNoteName) ? "yes" : "no"  );
+    printf("# event-filter  (%s)\n", (MClapExtEventFilter) ? "yes" : "no"  );
+    printf("# fd-support    (%s)\n", (MClapExtFdSupport) ? "yes" : "no"  );
+    printf("# gui           (%s)\n", (MClapExtGui) ? "yes" : "no"  );
+    printf("# gui-x11       (%s)\n", (MClapExtGuiX11) ? "yes" : "no"  );
+    printf("# latency       (%s)\n", (MClapExtLatency) ? "yes" : "no"  );
+    printf("# note-name     (%s)\n", (MClapExtNoteName) ? "yes" : "no"  );
 
-    printf("# params             (%s)\n", (MClapExtParams) ? "yes" : "no"  );
+    printf("# params        (%s)\n", (MClapExtParams) ? "yes" : "no"  );
     if (MClapExtParams) {
       num = MClapExtParams->count(MClapPlugin);
       printf("  %i params\n",num);
     }
 
-    printf("#  render             (%s)\n", (MClapExtRender) ? "yes" : "no"  );
-    printf("#  state              (%s)\n", (MClapExtState) ? "yes" : "no"  );
-    printf("#  vst2-convert       (%s)\n", (MClapExtVst2Convert) ? "yes" : "no"  );
-    printf("#  vst3-convert       (%s)\n", (MClapExtVst3Convert) ? "yes" : "no"  );
+    printf("# render        (%s)\n", (MClapExtRender) ? "yes" : "no"  );
+    printf("# state         (%s)\n", (MClapExtState) ? "yes" : "no"  );
+    printf("# vst2-convert  (%s)\n", (MClapExtVst2Convert) ? "yes" : "no"  );
+    printf("# vst3-convert  (%s)\n", (MClapExtVst3Convert) ? "yes" : "no"  );
 
   }
 

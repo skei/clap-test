@@ -2,13 +2,8 @@
 in progress, in motion, ..
 
 ------------------------------
-
-
-* audio input/effect
-
-  this should already be working, but untested..
-
-----------
+bugs/issues
+------------------------------
 
 * render length
 
@@ -17,11 +12,13 @@ in progress, in motion, ..
 
 ----------
 
-* arguments
+------------------------------
+features
+------------------------------
 
-  the current one is just confusing and complicated..
-  also, the curent scheme is getting a bit restricted if we want to add
-  multiple audio/midi inputs, outputs, parameters, etc..
+* audio input/effect
+
+  this should already be working, but untested..
 
 ----------
 
@@ -29,6 +26,12 @@ in progress, in motion, ..
 
   random blocksizes
   keep track of total number of samples we need to render
+
+----------
+
+* decay seconds
+
+  just add a certain amount to rendering length
 
 ----------
 
@@ -54,4 +57,49 @@ in progress, in motion, ..
 
 ----------
 
-* and always: cleanup, bug fies, etc..
+* tests
+
+  -T <value>
+  value = int/bitflag, so we can test everything
+
+  ways we can test a plugin?
+  (command line flags)
+  stress testing, "spec compliance", robustness
+  multiple instances
+  rapidly and chaotic opening/closing editor,
+  parameters out of range
+  buffers out of range (sizes)
+  null pointers
+  in-placve (input = output buffer ptrs)
+
+----------
+
+* extensions
+
+  implement more extensions, both on the plugin and host side
+
+------------------------------
+improvements
+------------------------------
+
+* printf()
+
+  tweak printf output for easier (machine) parsing
+  (failure, success, warning, info..)
+
+----------
+
+* arguments
+
+  the current one is just confusing and complicated..
+  also, the curent scheme is getting a bit restricted if we want to add
+  multiple audio/midi inputs, outputs, parameters, etc..
+
+----------
+
+* events
+
+  we create and delete events for every audioblock now, and we also search
+  through every event in every track to find events within specified time
+  segment.. not particularly good for performance.. but i don't think it's
+  that much of a problem.. this isn't meant for realtime usage..

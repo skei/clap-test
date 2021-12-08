@@ -249,6 +249,10 @@ public:
 
   //----------
 
+  /*
+    this returns a working, initialized instance of the plugin
+  */
+
   Instance* startPlugin(const char* path, uint32_t index,double samplerate, uint32_t blocksize) {
     //printf("> creating plugin '%s' (index %i)\n",path,index);
     Instance* instance = MEntry.createInstance(path,index);
@@ -283,6 +287,10 @@ public:
 
   //----------
 
+  /*
+    deactivates and deletes a plugin (instance)
+  */
+
   void stopPlugin(Instance* instance) {
     instance->stop_processing();
     printf("Stopped processing\n");
@@ -297,12 +305,18 @@ public:
   int main(int argc, char** argv) {
     if (parseArguments(argc,argv)) {
       if (MEntry.load(MArg.plugin_path)) {
+
+        // if we just want to print out something..
+
         if (MArg.do_list_plugins) {
           MEntry.listPlugins();
         }
         else if (MArg.do_print_descriptor) {
           MEntry.printDescriptor(MArg.plugin_index);
         }
+
+        // else we create an instance, and start processing
+
         else {
           printf("Starting plugin\n");
           Instance* instance = startPlugin(MArg.plugin_path,MArg.plugin_index,MArg.sample_rate,MArg.block_size);
@@ -317,6 +331,9 @@ public:
             printf("Plugin stopped\n");
           }
         }
+
+        // and clean up..
+
         MEntry.unload();
       }
       else {
